@@ -1,0 +1,26 @@
+name: project-practicum-ci
+
+on:
+  pull_request:
+    branches:
+      - master
+      - '*'
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'     # поменяй на свою версию при необходимости
+          cache: gradle
+
+      # Сборка, во время которой вызовется и линтер
+      - name: Build
+        run: chmod +x ./gradlew && ./gradlew --no-daemon build

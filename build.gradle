@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'com.diffplug.spotless' version '8.3.0'
+}
+
+group = 'ru.tbank.practicum'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// ----- Linter -----
+
+spotless {
+    java {
+        palantirJavaFormat().formatJavadoc(true)
+    }
+}
+
