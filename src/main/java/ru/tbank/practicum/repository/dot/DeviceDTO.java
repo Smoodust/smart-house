@@ -4,8 +4,17 @@ import ru.tbank.practicum.repository.settings.Setting;
 
 public class DeviceDTO {
     private Long id;
+    private Long idModel;
     private String name;
     private Setting setting;
+
+    public Long getIdModel() {
+        return idModel;
+    }
+
+    public void setIdModel(Long idModel) {
+        this.idModel = idModel;
+    }
 
     public Long getId() {
         return id;
@@ -33,6 +42,7 @@ public class DeviceDTO {
 
     public DeviceDTO(Device device) {
         this.id = device.getId();
+        this.idModel = device.getModel().getModelId();
         this.name = device.getName();
         this.setting = device.getSetting();
     }

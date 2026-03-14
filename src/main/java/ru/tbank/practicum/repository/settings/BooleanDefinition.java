@@ -6,9 +6,10 @@ public class BooleanDefinition extends SettingDefinition {
     }
 
     @Override
-    public void validate(Object value) throws IllegalArgumentException {
-        if (!(value instanceof Boolean)) {
-            throw new IllegalArgumentException("Boolean value required");
+    public Object convertAndValidate(Object value) throws IllegalArgumentException {
+        if (value instanceof Boolean) {
+            return value;
         }
+        throw new IllegalArgumentException("Boolean value required");
     }
 }

@@ -9,10 +9,6 @@ public abstract class SettingDefinition {
         this.defaultValue = defaultValue;
     }
 
-    public SettingDefinition(String name) {
-        this(name, null);
-    }
-
     public Object getDefaultValue() {
         return defaultValue;
     }
@@ -21,5 +17,5 @@ public abstract class SettingDefinition {
         return name;
     }
 
-    public abstract void validate(Object value) throws IllegalArgumentException;
+    public abstract Object convertAndValidate(Object value) throws IllegalArgumentException;
 }
