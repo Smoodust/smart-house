@@ -1,7 +1,10 @@
 package ru.tbank.practicum.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -16,6 +19,8 @@ public class WeatherService {
 
     private final WebClient webClient;
     private final String apiKey;
+
+    private static final Logger log = LoggerFactory.getLogger(WeatherService.class);
 
     public WeatherService(WebClient webClient, @Value("${weather.api.key}") String apiKey) {
         this.webClient = webClient;
@@ -40,8 +45,19 @@ public class WeatherService {
         }
 
         WeatherAPIResponse weatherResponse = getWeatherRequest(lat, lon).block();
+        assert weatherResponse != null;
         loc = new WeatherLocation(lat, lon, weatherResponse.main().temp());
         weatherRepository.updateWeather(loc);
         return loc;
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    public void updateWeatherLocationInfo() {
+        for (WeatherLocation wl : weatherRepository.getAllWeatherLocations()) {
+            WeatherAPIResponse weatherResponse = getWeatherRequest(wl.getLatitude(), wl.getLongtitude()).block();
+            assert weatherResponse != null;
+            WeatherLocation newWeather = new WeatherLocation(wl.getLatitude(), wl.getLongtitude(), weatherResponse.main().temp());
+            weatherRepository.updateWeather(newWeather);
+        }
     }
 }

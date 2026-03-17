@@ -76,6 +76,11 @@ public class MockRepository implements DeviceRepository, WeatherRepository {
     }
 
     @Override
+    public List<WeatherLocation> getAllWeatherLocations() {
+        return weatherLocations;
+    }
+
+    @Override
     public void updateWeather(WeatherLocation newWeather) {
         for (WeatherLocation wl : weatherLocations) {
             if (calculateDistance(newWeather.getLatitude(), newWeather.getLongtitude(), wl.getLatitude(), wl.getLongtitude()) < 10.0) {
