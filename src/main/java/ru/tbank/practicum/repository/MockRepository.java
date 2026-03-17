@@ -3,6 +3,7 @@ package ru.tbank.practicum.repository;
 import org.springframework.stereotype.Repository;
 import ru.tbank.practicum.repository.dot.Device;
 import ru.tbank.practicum.repository.dot.DeviceModel;
+import ru.tbank.practicum.repository.dot.WeatherLocation;
 import ru.tbank.practicum.repository.settings.BooleanDefinition;
 import ru.tbank.practicum.repository.settings.NumberDefinition;
 import ru.tbank.practicum.repository.settings.StringDefinition;
@@ -10,9 +11,10 @@ import ru.tbank.practicum.repository.settings.StringDefinition;
 import java.util.*;
 
 @Repository
-public class MockRepository implements DeviceRepository {
+public class MockRepository implements DeviceRepository, WeatherRepository {
     HashMap<Long, Device> devices = new HashMap<>();
     HashMap<Long, DeviceModel> deviceModels = new HashMap<>();
+    List<WeatherLocation> weatherLocations = new ArrayList<>();
 
     public MockRepository() {
         BooleanDefinition powerSetting = new BooleanDefinition("turnOnOff", false);
@@ -50,5 +52,37 @@ public class MockRepository implements DeviceRepository {
             return;
         }
         currentDevice.getSetting().setMap(newValues);
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    @Override
+    public WeatherLocation getNearestWeatherLocation(double lat, double lon) {
+        for (WeatherLocation wl : weatherLocations) {
+            if (calculateDistance(lat, lon, wl.getLatitude(), wl.getLongtitude()) < 10.0) {
+                return wl;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void updateWeather(WeatherLocation newWeather) {
+        for (WeatherLocation wl : weatherLocations) {
+            if (calculateDistance(newWeather.getLatitude(), newWeather.getLongtitude(), wl.getLatitude(), wl.getLongtitude()) < 10.0) {
+                wl.setTemperature(newWeather.getTemperature());
+                return;
+            }
+        }
+        weatherLocations.add(newWeather);
     }
 }
