@@ -1,9 +1,9 @@
 package ru.tbank.practicum.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.tbank.practicum.repository.dot.Device;
-import ru.tbank.practicum.repository.dot.DeviceModel;
-import ru.tbank.practicum.repository.dot.WeatherLocation;
+import ru.tbank.practicum.repository.entity.Device;
+import ru.tbank.practicum.repository.entity.DeviceModel;
+import ru.tbank.practicum.repository.entity.WeatherLocation;
 import ru.tbank.practicum.repository.settings.BooleanDefinition;
 import ru.tbank.practicum.repository.settings.NumberDefinition;
 import ru.tbank.practicum.repository.settings.StringDefinition;

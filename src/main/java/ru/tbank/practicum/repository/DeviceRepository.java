@@ -1,6 +1,6 @@
 package ru.tbank.practicum.repository;
 
-import ru.tbank.practicum.repository.dot.Device;
+import ru.tbank.practicum.repository.entity.Device;
 
 import java.util.List;
 import java.util.Map;

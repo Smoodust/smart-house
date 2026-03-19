@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import ru.tbank.practicum.repository.WeatherRepository;
-import ru.tbank.practicum.repository.dot.WeatherLocation;
-import ru.tbank.practicum.repository.dot.WeatherAPIResponse;
+import ru.tbank.practicum.repository.entity.WeatherLocation;
+import ru.tbank.practicum.service.dto.WeatherAPIResponse;
 
 @Service
 public class WeatherService {
@@ -27,7 +26,7 @@ public class WeatherService {
         this.apiKey = apiKey;
     }
 
-    private Mono<WeatherAPIResponse> getWeatherRequest(double lat, double lon) {
+    private WeatherAPIResponse getWeather(double lat, double lon) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("lat", lat)
@@ -35,7 +34,8 @@ public class WeatherService {
                         .queryParam("appid", apiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(WeatherAPIResponse.class);
+                .bodyToMono(WeatherAPIResponse.class)
+                .block();
     }
 
     public WeatherLocation getNearestWeatherLocation(double lat, double lon) {
@@ -44,7 +44,7 @@ public class WeatherService {
             return loc;
         }
 
-        WeatherAPIResponse weatherResponse = getWeatherRequest(lat, lon).block();
+        WeatherAPIResponse weatherResponse = getWeather(lat, lon);
         assert weatherResponse != null;
         loc = new WeatherLocation(lat, lon, weatherResponse.main().temp());
         weatherRepository.updateWeather(loc);
@@ -54,7 +54,7 @@ public class WeatherService {
     @Scheduled(cron = "0 0 * * * *")
     public void updateWeatherLocationInfo() {
         for (WeatherLocation wl : weatherRepository.getAllWeatherLocations()) {
-            WeatherAPIResponse weatherResponse = getWeatherRequest(wl.getLatitude(), wl.getLongtitude()).block();
+            WeatherAPIResponse weatherResponse = getWeather(wl.getLatitude(), wl.getLongtitude());
             assert weatherResponse != null;
             WeatherLocation newWeather = new WeatherLocation(wl.getLatitude(), wl.getLongtitude(), weatherResponse.main().temp());
             weatherRepository.updateWeather(newWeather);

@@ -1,5 +1,8 @@
-package ru.tbank.practicum.repository.dot;
+package ru.tbank.practicum.repository.entity;
 
+import lombok.Getter;
+
+@Getter
 public class WeatherLocation {
     private double latitude;
     private double longtitude;

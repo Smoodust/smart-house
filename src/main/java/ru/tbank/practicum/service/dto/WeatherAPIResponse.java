@@ -1,4 +1,4 @@
-package ru.tbank.practicum.repository.dot;
+package ru.tbank.practicum.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.tbank.practicum.service;
+package ru.tbank.practicum.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

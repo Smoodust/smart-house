@@ -1,4 +1,4 @@
-package ru.tbank.practicum.exceptions;
+package ru.tbank.practicum.exception;
 
 public class NoSuchSettingFound extends RuntimeException {
     public NoSuchSettingFound(String message) {

@@ -1,4 +1,4 @@
-package ru.tbank.practicum.exceptions;
+package ru.tbank.practicum.exception;
 
 public class DeviceNotFoundException extends RuntimeException {
     public DeviceNotFoundException(String message) {

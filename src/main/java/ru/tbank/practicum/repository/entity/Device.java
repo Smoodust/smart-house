@@ -1,9 +1,12 @@
-package ru.tbank.practicum.repository.dot;
+package ru.tbank.practicum.repository.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import ru.tbank.practicum.repository.settings.Setting;
 
-import java.util.Set;
+import java.util.Objects;
 
+@Getter
 public class Device {
     private Long id;
     private String name;
@@ -11,7 +14,7 @@ public class Device {
     private Setting setting;
 
     public Device(Long id, String name, DeviceModel model, Setting setting) {
-        if (setting.getDeviceModel().getModelId() != model.getModelId()) {
+        if (!Objects.equals(setting.getDeviceModel().getModelId(), model.getModelId())) {
             throw new IllegalArgumentException("Models ids for device and setting are different!");
         }
 
@@ -19,22 +22,6 @@ public class Device {
         this.name = name;
         this.model = model;
         this.setting = setting;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public DeviceModel getModel() {
-        return model;
-    }
-
-    public Setting getSetting() {
-        return setting;
     }
 
     public Device(Long id, String name, DeviceModel model) {

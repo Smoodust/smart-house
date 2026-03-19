@@ -2,8 +2,8 @@ package ru.tbank.practicum.repository.settings;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.tbank.practicum.exceptions.NoSuchSettingFound;
-import ru.tbank.practicum.repository.dot.DeviceModel;
+import ru.tbank.practicum.exception.NoSuchSettingFound;
+import ru.tbank.practicum.repository.entity.DeviceModel;
 
 import java.util.Collections;
 import java.util.HashMap;
