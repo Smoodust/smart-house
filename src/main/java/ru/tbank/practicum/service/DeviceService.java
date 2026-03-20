@@ -1,13 +1,12 @@
 package ru.tbank.practicum.service;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tbank.practicum.exception.DeviceNotFoundException;
 import ru.tbank.practicum.repository.DeviceRepository;
 import ru.tbank.practicum.repository.entity.Device;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class DeviceService {

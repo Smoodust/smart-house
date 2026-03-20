@@ -2,16 +2,16 @@ package ru.tbank.practicum.repository.settings;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.tbank.practicum.exception.NoSuchSettingFound;
-import ru.tbank.practicum.repository.entity.DeviceModel;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import ru.tbank.practicum.exception.NoSuchSettingFound;
+import ru.tbank.practicum.repository.entity.DeviceModel;
 
 public class Setting {
     @JsonIgnore
     private final DeviceModel deviceModel;
+
     private final Map<String, Object> values = new HashMap<>();
 
     public Setting(DeviceModel deviceModel) {
@@ -31,7 +31,7 @@ public class Setting {
     public void set(String name, Object value) {
         SettingDefinition currentDefinition = deviceModel.getSetting(name);
         if (currentDefinition == null) {
-            throw new NoSuchSettingFound("There is no such setting as "+name);
+            throw new NoSuchSettingFound("There is no such setting as " + name);
         }
         values.put(name, currentDefinition.convertAndValidate(value));
     }

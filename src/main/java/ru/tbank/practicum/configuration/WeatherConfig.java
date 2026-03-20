@@ -13,8 +13,6 @@ public class WeatherConfig {
 
     @Bean
     public WebClient webClient() {
-        return WebClient.builder()
-                .baseUrl(weatherApiUrl)
-                .build();
+        return WebClient.builder().baseUrl(weatherApiUrl).build();
     }
 }

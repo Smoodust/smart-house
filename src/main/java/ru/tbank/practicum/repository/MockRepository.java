@@ -1,5 +1,6 @@
 package ru.tbank.practicum.repository;
 
+import java.util.*;
 import org.springframework.stereotype.Repository;
 import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.repository.entity.DeviceModel;
@@ -7,8 +8,6 @@ import ru.tbank.practicum.repository.entity.WeatherLocation;
 import ru.tbank.practicum.repository.settings.BooleanDefinition;
 import ru.tbank.practicum.repository.settings.NumberDefinition;
 import ru.tbank.practicum.repository.settings.StringDefinition;
-
-import java.util.*;
 
 @Repository
 public class MockRepository implements DeviceRepository, WeatherRepository {
@@ -23,8 +22,10 @@ public class MockRepository implements DeviceRepository, WeatherRepository {
         NumberDefinition positionOfBlindsSetting = new NumberDefinition("positionBlinds", 0);
         deviceModels.put(0L, new DeviceModel(0L, "Heater", new ArrayList<>(List.of(powerSetting, temperatureSetting))));
         deviceModels.put(1L, new DeviceModel(1L, "Simple Lamp", new ArrayList<>(List.of(powerSetting))));
-        deviceModels.put(2L, new DeviceModel(2L, "Dance Lamp", new ArrayList<>(List.of(powerSetting, colorHueSetting))));
-        deviceModels.put(3L, new DeviceModel(3L, "Blinds", new ArrayList<>(List.of(powerSetting, positionOfBlindsSetting))));
+        deviceModels.put(
+                2L, new DeviceModel(2L, "Dance Lamp", new ArrayList<>(List.of(powerSetting, colorHueSetting))));
+        deviceModels.put(
+                3L, new DeviceModel(3L, "Blinds", new ArrayList<>(List.of(powerSetting, positionOfBlindsSetting))));
 
         devices.put(0L, new Device(0L, "Kitchen Heater", deviceModels.get(0L)));
         devices.put(1L, new Device(1L, "Bedroom Heater", deviceModels.get(0L)));
@@ -59,8 +60,10 @@ public class MockRepository implements DeviceRepository, WeatherRepository {
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                + Math.cos(Math.toRadians(lat1))
+                        * Math.cos(Math.toRadians(lat2))
+                        * Math.sin(dLon / 2)
+                        * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
@@ -83,7 +86,9 @@ public class MockRepository implements DeviceRepository, WeatherRepository {
     @Override
     public void updateWeather(WeatherLocation newWeather) {
         for (WeatherLocation wl : weatherLocations) {
-            if (calculateDistance(newWeather.getLatitude(), newWeather.getLongtitude(), wl.getLatitude(), wl.getLongtitude()) < 10.0) {
+            if (calculateDistance(
+                            newWeather.getLatitude(), newWeather.getLongtitude(), wl.getLatitude(), wl.getLongtitude())
+                    < 10.0) {
                 wl.setTemperature(newWeather.getTemperature());
                 return;
             }

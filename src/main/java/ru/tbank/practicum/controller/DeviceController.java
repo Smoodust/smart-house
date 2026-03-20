@@ -1,5 +1,7 @@
 package ru.tbank.practicum.controller;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -7,14 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.tbank.practicum.exception.DeviceNotFoundException;
-import ru.tbank.practicum.repository.DeviceRepository;
-import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.repository.dto.DeviceDTO;
 import ru.tbank.practicum.service.DeviceService;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/device")

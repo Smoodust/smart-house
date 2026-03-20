@@ -1,7 +1,6 @@
 package ru.tbank.practicum.repository.settings;
 
-public class NumberDefinition extends SettingDefinition
-{
+public class NumberDefinition extends SettingDefinition {
     public NumberDefinition(String name, Object defaultValue) {
         super(name, defaultValue);
     }

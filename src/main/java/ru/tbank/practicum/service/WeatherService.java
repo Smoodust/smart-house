@@ -1,5 +1,6 @@
 package ru.tbank.practicum.service;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -7,8 +8,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import ru.tbank.practicum.repository.WeatherRepository;
 import ru.tbank.practicum.repository.entity.WeatherLocation;
 import ru.tbank.practicum.service.dto.WeatherAPIResponse;
-
-import java.util.Optional;
 
 @Service
 public class WeatherService {
@@ -24,7 +23,8 @@ public class WeatherService {
     }
 
     public WeatherAPIResponse getWeather(double lat, double lon) {
-        return webClient.get()
+        return webClient
+                .get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("lat", lat)
                         .queryParam("lon", lon)
@@ -42,7 +42,8 @@ public class WeatherService {
         }
 
         Optional<WeatherAPIResponse> weatherResponse = Optional.ofNullable(getWeather(lat, lon));
-        Optional<Double> temperature = weatherResponse.map(WeatherAPIResponse::main).map(WeatherAPIResponse.Main::temp);
+        Optional<Double> temperature =
+                weatherResponse.map(WeatherAPIResponse::main).map(WeatherAPIResponse.Main::temp);
         if (temperature.isEmpty()) {
             return null;
         }

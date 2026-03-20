@@ -1,10 +1,8 @@
 package ru.tbank.practicum.repository.entity;
 
-import lombok.AllArgsConstructor;
+import java.util.Objects;
 import lombok.Getter;
 import ru.tbank.practicum.repository.settings.Setting;
-
-import java.util.Objects;
 
 @Getter
 public class Device {
