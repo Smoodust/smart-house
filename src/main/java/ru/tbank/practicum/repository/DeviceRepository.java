@@ -2,12 +2,12 @@ package ru.tbank.practicum.repository;
 
 import java.util.List;
 import java.util.Map;
-import ru.tbank.practicum.repository.entity.Device;
+import ru.tbank.practicum.repository.dto.DeviceTemp;
 
 public interface DeviceRepository {
-    Device getDevicebyId(long id);
+    DeviceTemp getDevicebyId(long id);
 
-    List<Device> getAllDevices();
+    List<DeviceTemp> getAllDevices();
 
     void updateDeviceState(long id, Map<String, Object> newValues);
 }

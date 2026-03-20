@@ -3,7 +3,6 @@ package ru.tbank.practicum.repository.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.repository.settings.Setting;
 
 @Getter
@@ -15,10 +14,10 @@ public class DeviceDTO {
     private String name;
     private Setting setting;
 
-    public DeviceDTO(Device device) {
-        this.id = device.getId();
-        this.idModel = device.getModel().getModelId();
-        this.name = device.getName();
-        this.setting = device.getSetting();
+    public DeviceDTO(DeviceTemp deviceTemp) {
+        this.id = deviceTemp.getId();
+        this.idModel = deviceTemp.getModel().getModelId();
+        this.name = deviceTemp.getName();
+        this.setting = deviceTemp.getSetting();
     }
 }

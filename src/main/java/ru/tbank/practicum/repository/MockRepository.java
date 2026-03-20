@@ -2,8 +2,8 @@ package ru.tbank.practicum.repository;
 
 import java.util.*;
 import org.springframework.stereotype.Repository;
-import ru.tbank.practicum.repository.entity.Device;
-import ru.tbank.practicum.repository.entity.DeviceModel;
+import ru.tbank.practicum.repository.dto.DeviceTemp;
+import ru.tbank.practicum.repository.dto.DeviceModel;
 import ru.tbank.practicum.repository.entity.WeatherLocation;
 import ru.tbank.practicum.repository.settings.BooleanDefinition;
 import ru.tbank.practicum.repository.settings.NumberDefinition;
@@ -11,7 +11,7 @@ import ru.tbank.practicum.repository.settings.StringDefinition;
 
 @Repository
 public class MockRepository implements DeviceRepository, WeatherRepository {
-    HashMap<Long, Device> devices = new HashMap<>();
+    HashMap<Long, DeviceTemp> devices = new HashMap<>();
     HashMap<Long, DeviceModel> deviceModels = new HashMap<>();
     List<WeatherLocation> weatherLocations = new ArrayList<>();
 
@@ -27,32 +27,32 @@ public class MockRepository implements DeviceRepository, WeatherRepository {
         deviceModels.put(
                 3L, new DeviceModel(3L, "Blinds", new ArrayList<>(List.of(powerSetting, positionOfBlindsSetting))));
 
-        devices.put(0L, new Device(0L, "Kitchen Heater", deviceModels.get(0L)));
-        devices.put(1L, new Device(1L, "Bedroom Heater", deviceModels.get(0L)));
-        devices.put(2L, new Device(2L, "Kitchen Lamp", deviceModels.get(1L)));
-        devices.put(3L, new Device(3L, "Bedroom Lamp", deviceModels.get(1L)));
-        devices.put(4L, new Device(4L, "Hallway Lamp", deviceModels.get(1L)));
-        devices.put(5L, new Device(5L, "Club Lamp", deviceModels.get(2L)));
-        devices.put(6L, new Device(6L, "Bedroom Blinds", deviceModels.get(3L)));
+        devices.put(0L, new DeviceTemp(0L, "Kitchen Heater", deviceModels.get(0L)));
+        devices.put(1L, new DeviceTemp(1L, "Bedroom Heater", deviceModels.get(0L)));
+        devices.put(2L, new DeviceTemp(2L, "Kitchen Lamp", deviceModels.get(1L)));
+        devices.put(3L, new DeviceTemp(3L, "Bedroom Lamp", deviceModels.get(1L)));
+        devices.put(4L, new DeviceTemp(4L, "Hallway Lamp", deviceModels.get(1L)));
+        devices.put(5L, new DeviceTemp(5L, "Club Lamp", deviceModels.get(2L)));
+        devices.put(6L, new DeviceTemp(6L, "Bedroom Blinds", deviceModels.get(3L)));
     }
 
     @Override
-    public Device getDevicebyId(long id) {
+    public DeviceTemp getDevicebyId(long id) {
         return devices.get(id);
     }
 
     @Override
-    public List<Device> getAllDevices() {
+    public List<DeviceTemp> getAllDevices() {
         return new ArrayList<>(devices.values());
     }
 
     @Override
     public void updateDeviceState(long id, Map<String, Object> newValues) {
-        Device currentDevice = devices.get(id);
-        if (currentDevice == null) {
+        DeviceTemp currentDeviceTemp = devices.get(id);
+        if (currentDeviceTemp == null) {
             return;
         }
-        currentDevice.getSetting().setMap(newValues);
+        currentDeviceTemp.getSetting().setMap(newValues);
     }
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {

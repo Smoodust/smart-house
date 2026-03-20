@@ -6,23 +6,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.tbank.practicum.exception.DeviceNotFoundException;
 import ru.tbank.practicum.repository.DeviceRepository;
-import ru.tbank.practicum.repository.entity.Device;
+import ru.tbank.practicum.repository.dto.DeviceTemp;
 
 @Service
 public class DeviceService {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    public List<Device> getAllDevices() {
+    public List<DeviceTemp> getAllDevices() {
         return deviceRepository.getAllDevices();
     }
 
-    public Device getDeviceById(long id) {
-        Device device = deviceRepository.getDevicebyId(id);
-        if (device == null) {
+    public DeviceTemp getDeviceById(long id) {
+        DeviceTemp deviceTemp = deviceRepository.getDevicebyId(id);
+        if (deviceTemp == null) {
             throw new DeviceNotFoundException("Device not found with id " + id);
         }
-        return device;
+        return deviceTemp;
     }
 
     public void updateDeviceState(long id, Map<String, Object> newValues) {

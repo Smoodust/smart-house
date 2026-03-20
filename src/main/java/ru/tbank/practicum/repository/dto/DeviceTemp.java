@@ -1,17 +1,17 @@
-package ru.tbank.practicum.repository.entity;
+package ru.tbank.practicum.repository.dto;
 
 import java.util.Objects;
 import lombok.Getter;
 import ru.tbank.practicum.repository.settings.Setting;
 
 @Getter
-public class Device {
+public class DeviceTemp {
     private Long id;
     private String name;
     private DeviceModel model;
     private Setting setting;
 
-    public Device(Long id, String name, DeviceModel model, Setting setting) {
+    public DeviceTemp(Long id, String name, DeviceModel model, Setting setting) {
         if (!Objects.equals(setting.getDeviceModel().getModelId(), model.getModelId())) {
             throw new IllegalArgumentException("Models ids for device and setting are different!");
         }
@@ -22,7 +22,7 @@ public class Device {
         this.setting = setting;
     }
 
-    public Device(Long id, String name, DeviceModel model) {
+    public DeviceTemp(Long id, String name, DeviceModel model) {
         this(id, name, model, new Setting(model));
     }
 }

@@ -1,4 +1,4 @@
-package ru.tbank.practicum.repository.entity;
+package ru.tbank.practicum.repository.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

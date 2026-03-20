@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import ru.tbank.practicum.exception.NoSuchSettingFound;
-import ru.tbank.practicum.repository.entity.DeviceModel;
+import ru.tbank.practicum.repository.dto.DeviceModel;
 
 public class Setting {
     @JsonIgnore
