@@ -36,7 +36,7 @@ public class MockRepository implements DeviceRepository, WeatherRepository {
     }
 
     @Override
-    public Device getDevicebyId(Long id) {
+    public Device getDevicebyId(long id) {
         return devices.get(id);
     }
 
@@ -46,7 +46,7 @@ public class MockRepository implements DeviceRepository, WeatherRepository {
     }
 
     @Override
-    public void updateDeviceState(Long id, Map<String, Object> newValues) {
+    public void updateDeviceState(long id, Map<String, Object> newValues) {
         Device currentDevice = devices.get(id);
         if (currentDevice == null) {
             return;

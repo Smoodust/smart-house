@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface DeviceRepository {
-    Device getDevicebyId(Long id);
+    Device getDevicebyId(long id);
     List<Device> getAllDevices();
-    void updateDeviceState(Long id, Map<String, Object> newValues);
+    void updateDeviceState(long id, Map<String, Object> newValues);
 }

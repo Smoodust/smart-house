@@ -11,6 +11,7 @@ import ru.tbank.practicum.exception.DeviceNotFoundException;
 import ru.tbank.practicum.repository.DeviceRepository;
 import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.repository.dto.DeviceDTO;
+import ru.tbank.practicum.service.DeviceService;
 
 import java.util.List;
 import java.util.Map;
@@ -19,24 +20,20 @@ import java.util.Map;
 @RequestMapping("/device")
 public class DeviceController {
     @Autowired
-    private DeviceRepository deviceRepository;
+    private DeviceService deviceService;
 
     @GetMapping("")
     List<DeviceDTO> getDevices() {
-        return deviceRepository.getAllDevices().stream().map(DeviceDTO::new).toList();
+        return deviceService.getAllDevices().stream().map(DeviceDTO::new).toList();
     }
 
     @GetMapping("/{id}")
     DeviceDTO getDevice(@PathVariable Long id) {
-        Device device = deviceRepository.getDevicebyId(id);
-        if (device == null) {
-            throw new DeviceNotFoundException("Device not found with id " + id);
-        }
-        return new DeviceDTO(device);
+        return new DeviceDTO(deviceService.getDeviceById(id));
     }
 
     @PatchMapping("/{id}")
     public void updateDeviceState(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
-        deviceRepository.updateDeviceState(id, payload);
+        deviceService.updateDeviceState(id, payload);
     }
 }
