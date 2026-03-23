@@ -2,7 +2,6 @@ package ru.tbank.practicum.repository.settings;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.NoArgsConstructor;
 
 public class BooleanDefinition extends SettingDefinition {
     @JsonCreator

@@ -1,7 +1,6 @@
 package ru.tbank.practicum.repository.entity;
 
 import jakarta.persistence.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;

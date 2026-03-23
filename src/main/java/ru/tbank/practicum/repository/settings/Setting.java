@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import lombok.Getter;
 import ru.tbank.practicum.exception.NoSuchSettingFound;
-import ru.tbank.practicum.repository.dto.DeviceModelDTO;
 import ru.tbank.practicum.repository.entity.DeviceModel;
 
 public class Setting {
