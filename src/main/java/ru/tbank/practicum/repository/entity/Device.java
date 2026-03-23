@@ -1,14 +1,7 @@
 package ru.tbank.practicum.repository.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -30,15 +23,20 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "model_id")
-    private DeviceModel model;
-
+    @Column(name = "name", nullable = false)
     private String name;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
-    private Map<String, Object> setting = new HashMap<>();
+    @Column(name = "settings", columnDefinition = "json", nullable = false)
+    private Map<String, Object> settings = new HashMap<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "model_id", nullable = false)
+    private DeviceModel model;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
 
     public void updateSettings(Map<String, Object> updates) {
         HashMap<String, Object> converted = new HashMap<>();
@@ -47,6 +45,6 @@ public class Device {
             SettingDefinition current = model.getSetting(name);
             converted.put(name, current.convertAndValidate(entry.getValue()));
         }
-        setting.putAll(converted);
+        settings.putAll(converted);
     }
 }

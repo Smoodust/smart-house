@@ -1,12 +1,7 @@
 package ru.tbank.practicum.repository.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -28,11 +23,15 @@ public class DeviceModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long modelId;
 
+    @Column(name = "model_name", nullable = false, unique = true)
     private String modelName;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     private List<SettingDefinition> settings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Device> devices;
 
     public SettingDefinition getSetting(String name) {
         return settings.stream()
