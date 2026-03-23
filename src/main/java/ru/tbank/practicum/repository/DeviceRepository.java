@@ -1,13 +1,11 @@
 package ru.tbank.practicum.repository;
 
-import java.util.List;
-import java.util.Map;
-import ru.tbank.practicum.repository.dto.DeviceTemp;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.tbank.practicum.repository.entity.Device;
 
-public interface DeviceRepository {
-    DeviceTemp getDevicebyId(long id);
-
-    List<DeviceTemp> getAllDevices();
-
-    void updateDeviceState(long id, Map<String, Object> newValues);
+@Repository
+public interface DeviceRepository extends JpaRepository<Device, Long> {
+    public Optional<Device> findById(Long id);
 }

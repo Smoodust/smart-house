@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.tbank.practicum.repository.dto.DeviceDTO;
+import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.service.DeviceService;
 
 @RestController

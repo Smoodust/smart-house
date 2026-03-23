@@ -7,7 +7,7 @@ import ru.tbank.practicum.repository.settings.SettingDefinition;
 
 @Getter
 @AllArgsConstructor
-public class DeviceModel {
+public class DeviceModelDTO {
     private Long modelId;
     private String modelName;
     private List<SettingDefinition> settings;
