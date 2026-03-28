@@ -24,7 +24,9 @@ public class DeviceController {
 
     @GetMapping("")
     List<DeviceDTO> getAllDevices(@AuthenticationPrincipal UserDetails userDetails) {
-        return deviceService.getAllDevices(userDetails).stream().map(DeviceDTO::new).toList();
+        return deviceService.getAllDevices(userDetails).stream()
+                .map(DeviceDTO::new)
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -33,7 +35,10 @@ public class DeviceController {
     }
 
     @PatchMapping("/{id}")
-    public void updateDeviceState(@PathVariable Long id, @RequestBody Map<String, Object> payload, @AuthenticationPrincipal UserDetails userDetails) {
+    public void updateDeviceState(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload,
+            @AuthenticationPrincipal UserDetails userDetails) {
         deviceService.updateDeviceState(id, payload, userDetails);
     }
 }

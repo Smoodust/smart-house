@@ -46,7 +46,8 @@ public class DeviceService {
         if (device.isEmpty()) {
             throw new DeviceNotFoundException("Device not found with id " + id);
         }
-        if (!Objects.equals(device.get().getLocation().getUser().getId(), user.get().getId())) {
+        if (!Objects.equals(
+                device.get().getLocation().getUser().getId(), user.get().getId())) {
             throw new IllegalArgumentException("Forbidden to access others device!");
         }
         return device.get();

@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import ru.tbank.practicum.repository.UserRepository;
 import ru.tbank.practicum.repository.entity.User;
 
-import javax.swing.text.html.Option;
-
 @Service
 public class UserService {
     @Autowired
