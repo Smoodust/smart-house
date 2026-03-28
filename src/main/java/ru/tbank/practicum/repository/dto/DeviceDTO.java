@@ -19,6 +19,7 @@ public class DeviceDTO {
         this.id = device.getId();
         this.idModel = device.getModel().getModelId();
         this.name = device.getName();
-        this.setting = new Setting(device.getModel(), device.getSettings());
+        this.setting =
+                new Setting(device.getModel(), device.getLastHistoricalData().getSettings());
     }
 }

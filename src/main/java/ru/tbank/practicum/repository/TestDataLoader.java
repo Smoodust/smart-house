@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.repository.entity.DeviceModel;
+import ru.tbank.practicum.repository.entity.HistoricalDeviceData;
 import ru.tbank.practicum.repository.entity.Location;
 import ru.tbank.practicum.repository.entity.User;
 import ru.tbank.practicum.repository.settings.BooleanDefinition;
@@ -100,7 +101,9 @@ public class TestDataLoader {
         for (SettingDefinition definition : model.getSettings()) {
             updates.put(definition.getName(), definition.getDefaultValue());
         }
-        device.updateSettings(updates);
+        HistoricalDeviceData data = new HistoricalDeviceData();
+        data.setSettings(updates);
+        device.addNewData(data);
         return deviceRepository.save(device);
     }
 }

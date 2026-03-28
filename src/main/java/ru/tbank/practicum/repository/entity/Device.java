@@ -1,15 +1,12 @@
 package ru.tbank.practicum.repository.entity;
 
 import jakarta.persistence.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-import ru.tbank.practicum.repository.settings.SettingDefinition;
 
 @Entity
 @Getter
@@ -20,14 +17,11 @@ import ru.tbank.practicum.repository.settings.SettingDefinition;
 public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "device_id")
     private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "settings", columnDefinition = "json", nullable = false)
-    private Map<String, Object> settings = new HashMap<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id", nullable = false)
@@ -37,13 +31,28 @@ public class Device {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    public void updateSettings(Map<String, Object> updates) {
-        HashMap<String, Object> converted = new HashMap<>();
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HistoricalDeviceData> historicalDataList = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "last_historical_data_id")
+    private HistoricalDeviceData lastHistoricalData;
+
+    public void addNewData(HistoricalDeviceData data) {
+        data.setDevice(this);
+        historicalDataList.add(data);
+        lastHistoricalData = data;
+    }
+
+    /*public void updateSettings(Map<String, Object> updates) {
+        HashMap<String, Object> newData = new HashMap<>();
+        newData.putAll(lastHistoricalData.getSettings());
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
             String name = entry.getKey();
             SettingDefinition current = model.getSetting(name);
-            converted.put(name, current.convertAndValidate(entry.getValue()));
+            if (current != null) {
+                newData.put(name, current.convertAndValidate(entry.getValue()));
+            }
         }
-        settings.putAll(converted);
-    }
+    }*/
 }
