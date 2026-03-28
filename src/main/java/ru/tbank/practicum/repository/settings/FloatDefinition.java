@@ -9,8 +9,8 @@ public class FloatDefinition extends SettingDefinition {
 
     @Override
     public Object convertAndValidate(Object value) throws IllegalArgumentException {
-        if (value instanceof Float) {
-            return value;
+        if (value instanceof Number) {
+            return ((Number) value).floatValue();
         }
         if (value instanceof String) {
             return Float.parseFloat((String) value);

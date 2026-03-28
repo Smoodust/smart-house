@@ -1,5 +1,6 @@
 package ru.tbank.practicum.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import ru.tbank.practicum.repository.dto.DeviceDTO;
 import ru.tbank.practicum.service.DeviceService;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/device")
 public class DeviceController {
     @Autowired

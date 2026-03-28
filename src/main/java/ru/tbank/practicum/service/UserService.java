@@ -1,5 +1,6 @@
 package ru.tbank.practicum.service;
 
+import java.util.Set;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,7 @@ public class UserService {
         User user = new User();
         user.setLogin(login);
         user.setPassHash(passwordEncoder.encode(password));
+        user.setRoles(Set.of("USER"));
         userRepository.save(user);
     }
 }
