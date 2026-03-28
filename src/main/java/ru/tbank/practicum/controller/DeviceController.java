@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,17 +23,17 @@ public class DeviceController {
     private DeviceService deviceService;
 
     @GetMapping("")
-    List<DeviceDTO> getDevices() {
-        return deviceService.getAllDevices().stream().map(DeviceDTO::new).toList();
+    List<DeviceDTO> getAllDevices(@AuthenticationPrincipal UserDetails userDetails) {
+        return deviceService.getAllDevices(userDetails).stream().map(DeviceDTO::new).toList();
     }
 
     @GetMapping("/{id}")
-    DeviceDTO getDevice(@PathVariable Long id) {
-        return new DeviceDTO(deviceService.getDeviceById(id));
+    DeviceDTO getDevice(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        return new DeviceDTO(deviceService.getDeviceById(id, userDetails));
     }
 
     @PatchMapping("/{id}")
-    public void updateDeviceState(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
-        deviceService.updateDeviceState(id, payload);
+    public void updateDeviceState(@PathVariable Long id, @RequestBody Map<String, Object> payload, @AuthenticationPrincipal UserDetails userDetails) {
+        deviceService.updateDeviceState(id, payload, userDetails);
     }
 }
