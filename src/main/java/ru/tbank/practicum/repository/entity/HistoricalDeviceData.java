@@ -18,7 +18,7 @@ import org.hibernate.type.SqlTypes;
 public class HistoricalDeviceData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "history_id")
     private Long history_id;
 
     @JdbcTypeCode(SqlTypes.JSON)

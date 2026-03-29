@@ -1,0 +1,148 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: pluton
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar(255)
+              - column:
+                  name: pass_hash
+                  type: varchar(255)
+
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: false
+                    nullable: false
+                    foreignKeyName: fk_user_roles_user
+                    references: users(user_id)
+              - column:
+                  name: role
+                  type: varchar(255)
+
+        - createTable:
+            tableName: location
+            columns:
+              - column:
+                  name: location_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_location_user
+                    references: users(user_id)
+
+        - createTable:
+            tableName: device_model
+            columns:
+              - column:
+                  name: model_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: model_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+        - createTable:
+            tableName: historical_device_data
+            columns:
+              - column:
+                  name: history_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: settings
+                  type: jsonb
+                  defaultValue: '{}'
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: device
+            columns:
+              - column:
+                  name: device_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: model_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_device_model
+                    references: device_model(model_id)
+              - column:
+                  name: location_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_device_location
+                    references: location(location_id)
+              - column:
+                  name: last_historical_data_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_device_historical_data
+                    references: historical_device_data(history_id)
+
+        - createTable:
+            tableName: weather_location
+            columns:
+              - column:
+                  name: weather_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: latitude
+                  type: double precision
+              - column:
+                  name: longtitude
+                  type: double precision
+              - column:
+                  name: temperature
+                  type: double precision

@@ -20,6 +20,7 @@ import ru.tbank.practicum.repository.settings.SettingDefinition;
 public class DeviceModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "model_id")
     private Long modelId;
 
     @Column(name = "model_name", nullable = false, unique = true)

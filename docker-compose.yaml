@@ -1,19 +1,10 @@
 services:
-  backend:
-    build: .
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
   db:
     image: postgres:18.3
     environment:
-      POSTGRES_USER: "myuser"
-      POSTGRES_PASSWORD: "mypassword"
-      POSTGRES_DB: "mydatabase"
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
     ports:
       - "5432:5432"
     healthcheck:
@@ -21,3 +12,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  liquibase:
+    image: liquibase/liquibase:4.33-alpine
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./liquibase:/liquibase/changelog
+    command: --url=jdbc:postgresql://db:5432/mydatabase --username=myuser --password=mypassword --changeLogFile=changelog/db.changelog-master.yaml update
+
+  backend:
+    build: .
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
