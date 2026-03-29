@@ -26,7 +26,7 @@ public class DeviceModel {
     private String modelName;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private List<SettingDefinition> settings = new ArrayList<>();
 
     @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
