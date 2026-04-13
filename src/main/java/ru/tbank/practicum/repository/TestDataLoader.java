@@ -4,6 +4,8 @@ import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -75,6 +77,7 @@ public class TestDataLoader {
         User user = new User();
         user.setLogin(login);
         user.setPassHash(passwordEncoder.encode(password));
+        user.setRoles(Set.of("USER"));
         return userRepository.save(user);
     }
 

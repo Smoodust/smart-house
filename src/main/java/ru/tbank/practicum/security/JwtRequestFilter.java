@@ -1,4 +1,4 @@
-package ru.tbank.practicum.service;
+package ru.tbank.practicum.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.tbank.practicum.service.JwtService;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {

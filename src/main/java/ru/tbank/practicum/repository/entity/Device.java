@@ -43,16 +43,4 @@ public class Device {
         historicalDataList.add(data);
         lastHistoricalData = data;
     }
-
-    /*public void updateSettings(Map<String, Object> updates) {
-        HashMap<String, Object> newData = new HashMap<>();
-        newData.putAll(lastHistoricalData.getSettings());
-        for (Map.Entry<String, Object> entry : updates.entrySet()) {
-            String name = entry.getKey();
-            SettingDefinition current = model.getSetting(name);
-            if (current != null) {
-                newData.put(name, current.convertAndValidate(entry.getValue()));
-            }
-        }
-    }*/
 }
