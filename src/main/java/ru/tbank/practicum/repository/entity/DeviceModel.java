@@ -20,13 +20,14 @@ import ru.tbank.practicum.repository.settings.SettingDefinition;
 public class DeviceModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "model_id")
     private Long modelId;
 
     @Column(name = "model_name", nullable = false, unique = true)
     private String modelName;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "jsonb")
     private List<SettingDefinition> settings = new ArrayList<>();
 
     @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

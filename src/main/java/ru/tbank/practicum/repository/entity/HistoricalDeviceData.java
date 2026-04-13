@@ -18,11 +18,11 @@ import org.hibernate.type.SqlTypes;
 public class HistoricalDeviceData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "history_id")
     private Long history_id;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "settings", columnDefinition = "json", nullable = false)
+    @Column(name = "settings", columnDefinition = "jsonb", nullable = false)
     private Map<String, Object> settings = new HashMap<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
