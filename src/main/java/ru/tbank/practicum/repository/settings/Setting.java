@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 import ru.tbank.practicum.exception.NoSuchSettingFound;
 import ru.tbank.practicum.repository.entity.DeviceModel;
 
 public class Setting {
+    @Getter
     @JsonIgnore
     private final DeviceModel deviceModel;
 
@@ -22,10 +24,6 @@ public class Setting {
     public Setting(DeviceModel deviceModel, Map<String, Object> values) {
         this(deviceModel);
         values.forEach(this::set);
-    }
-
-    public DeviceModel getDeviceModel() {
-        return deviceModel;
     }
 
     public void set(String name, Object value) {

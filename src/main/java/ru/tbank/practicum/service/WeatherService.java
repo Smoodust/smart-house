@@ -35,20 +35,30 @@ public class WeatherService {
                 .block();
     }
 
-    public WeatherLocation getNearestWeatherLocation(double lat, double lon) {
-        WeatherLocation loc = weatherRepository.getNearestWeatherLocation(lat, lon);
-        if (loc != null) {
-            return loc;
-        }
-
-        Optional<WeatherAPIResponse> weatherResponse = Optional.ofNullable(getWeather(lat, lon));
+    public WeatherLocation updateWeather(WeatherLocation weatherLocation) {
+        Optional<WeatherAPIResponse> weatherResponse =
+                Optional.ofNullable(getWeather(weatherLocation.getLatitude(), weatherLocation.getLongtitude()));
         Optional<Double> temperature =
                 weatherResponse.map(WeatherAPIResponse::main).map(WeatherAPIResponse.Main::temp);
         if (temperature.isEmpty()) {
             return null;
         }
-        loc = new WeatherLocation(lat, lon, temperature.get());
-        weatherRepository.updateWeather(loc);
-        return loc;
+        weatherLocation.setTemperature(temperature.get());
+        return weatherRepository.save(weatherLocation);
+    }
+
+    public WeatherLocation getNearestWeatherLocation(double lat, double lon) {
+        lat = (double) Math.round(lat * 10) / 10;
+        lon = (double) Math.round(lon * 10) / 10;
+
+        Optional<WeatherLocation> loc = weatherRepository.findByLatitudeAndLongtitude(lat, lon);
+        if (loc.isPresent()) {
+            return loc.get();
+        }
+
+        WeatherLocation newLocation = new WeatherLocation();
+        newLocation.setLatitude(lat);
+        newLocation.setLongtitude(lon);
+        return updateWeather(weatherRepository.save(newLocation));
     }
 }

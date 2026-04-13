@@ -1,7 +1,9 @@
 package ru.tbank.practicum.repository.settings;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class StringDefinition extends SettingDefinition {
-    public StringDefinition(String name, String defaultValue) {
+    public StringDefinition(@JsonProperty("name") String name, @JsonProperty("defaultValue") String defaultValue) {
         super(name, defaultValue);
     }
 
