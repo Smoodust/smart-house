@@ -1,4 +1,4 @@
-package ru.tbank.practicum.repository.dto;
+package ru.tbank.practicum.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
