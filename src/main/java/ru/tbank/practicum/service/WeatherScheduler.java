@@ -22,8 +22,9 @@ public class WeatherScheduler {
         Pageable page = PageRequest.of(0, 100);
         Page<WeatherLocation> result = weatherRepository.findAll(page);
         while (result.hasContent()) {
-            result.stream().map(wl -> weatherService.updateWeather(wl));
+            result.forEach(wl -> weatherService.updateWeather(wl));
             page = page.next();
+            result = weatherRepository.findAll(page);
         }
     }
 }
