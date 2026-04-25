@@ -1,7 +1,6 @@
 package ru.tbank.practicum.service;
 
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,13 +10,13 @@ import ru.tbank.practicum.service.dto.WeatherAPIResponse;
 
 @Service
 public class WeatherService {
-    @Autowired
-    private WeatherRepository weatherRepository;
-
+    private final WeatherRepository weatherRepository;
     private final WebClient webClient;
     private final String apiKey;
 
-    public WeatherService(WebClient webClient, @Value("${weather.api.key}") String apiKey) {
+    public WeatherService(
+            WeatherRepository weatherRepository, WebClient webClient, @Value("${weather.api.key}") String apiKey) {
+        this.weatherRepository = weatherRepository;
         this.webClient = webClient;
         this.apiKey = apiKey;
     }

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ru.tbank.practicum.exception.DeviceNotFoundException;
@@ -19,14 +18,18 @@ import ru.tbank.practicum.repository.settings.SettingDefinition;
 
 @Service
 public class DeviceService {
-    @Autowired
-    private DeviceRepository deviceRepository;
+    private final DeviceRepository deviceRepository;
+    private final UserService userService;
+    private final HistoricalDataRepository historicalDataRepository;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private HistoricalDataRepository historicalDataRepository;
+    public DeviceService(
+            DeviceRepository deviceRepository,
+            UserService userService,
+            HistoricalDataRepository historicalDataRepository) {
+        this.deviceRepository = deviceRepository;
+        this.userService = userService;
+        this.historicalDataRepository = historicalDataRepository;
+    }
 
     public List<Device> getAllDevices(UserDetails userDetails) {
         Optional<User> user = userService.getUserByUserDetail(userDetails);

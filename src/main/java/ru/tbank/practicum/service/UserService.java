@@ -3,7 +3,6 @@ package ru.tbank.practicum.service;
 import java.util.Optional;
 import java.util.Set;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,11 +11,13 @@ import ru.tbank.practicum.repository.entity.User;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public void register(@NonNull String login, @NonNull String password) {
         if (userRepository.findByLogin(login).isPresent()) {
