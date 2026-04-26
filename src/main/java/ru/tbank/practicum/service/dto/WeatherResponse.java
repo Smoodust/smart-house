@@ -5,9 +5,9 @@ import ru.tbank.practicum.repository.entity.WeatherLocation;
 
 @AllArgsConstructor
 public class WeatherResponse {
-    private double temperature;
+  private double temperature;
 
-    public WeatherResponse(WeatherLocation wl) {
-        this(wl.getTemperature());
-    }
+  public WeatherResponse(WeatherLocation wl) {
+    this(wl.getTemperature());
+  }
 }

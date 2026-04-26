@@ -105,3 +105,15 @@ jacocoTestCoverageVerification {
 tasks.named('bootJar') {
 	archiveFileName = 'app.jar'
 }
+
+spotless {
+	java {
+		target 'src/**/*.java'
+
+		googleJavaFormat() // or use eclipse(), prettier(), etc.
+
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}

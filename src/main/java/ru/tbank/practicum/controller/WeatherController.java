@@ -12,10 +12,10 @@ import ru.tbank.practicum.service.dto.WeatherResponse;
 @RestController
 @RequestMapping("/weather")
 public class WeatherController {
-    private final WeatherService weatherService;
+  private final WeatherService weatherService;
 
-    @GetMapping
-    public WeatherResponse getWeather(@RequestParam double lat, @RequestParam double lon) {
-        return new WeatherResponse(weatherService.getNearestWeatherLocation(lat, lon));
-    }
+  @GetMapping
+  public WeatherResponse getWeather(@RequestParam double lat, @RequestParam double lon) {
+    return new WeatherResponse(weatherService.getNearestWeatherLocation(lat, lon));
+  }
 }

@@ -1,98 +1,98 @@
 package ru.tbank.practicum;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.jsonwebtoken.ExpiredJwtException;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.tbank.practicum.service.JwtService;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class JwtServiceTest {
 
-    private JwtService jwtService;
+  private JwtService jwtService;
 
-    private final String SECRET = "mysecretkeymysecretkeymysecretkey12"; // минимум 32 байта
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 час
+  private final String SECRET = "mysecretkeymysecretkeymysecretkey12"; // минимум 32 байта
+  private final long EXPIRATION = 1000 * 60 * 60; // 1 час
 
-    private UserDetails userDetails;
+  private UserDetails userDetails;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        jwtService = new JwtService();
+  @BeforeEach
+  void setUp() throws Exception {
+    jwtService = new JwtService();
 
-        setField(jwtService, "secret", SECRET);
-        setField(jwtService, "expiration", EXPIRATION);
+    setField(jwtService, "secret", SECRET);
+    setField(jwtService, "expiration", EXPIRATION);
 
-        userDetails = new User("testUser", "password", Collections.emptyList());
-    }
+    userDetails = new User("testUser", "password", Collections.emptyList());
+  }
 
-    private void setField(Object target, String fieldName, Object value) throws Exception {
-        Field field = JwtService.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
-    }
+  private void setField(Object target, String fieldName, Object value) throws Exception {
+    Field field = JwtService.class.getDeclaredField(fieldName);
+    field.setAccessible(true);
+    field.set(target, value);
+  }
 
-    @Test
-    void shouldGenerateToken() {
-        String token = jwtService.generateToken(userDetails);
+  @Test
+  void shouldGenerateToken() {
+    String token = jwtService.generateToken(userDetails);
 
-        assertNotNull(token);
-        assertFalse(token.isEmpty());
-    }
+    assertNotNull(token);
+    assertFalse(token.isEmpty());
+  }
 
-    @Test
-    void shouldExtractUsername() {
-        String token = jwtService.generateToken(userDetails);
+  @Test
+  void shouldExtractUsername() {
+    String token = jwtService.generateToken(userDetails);
 
-        String username = jwtService.extractUsername(token);
+    String username = jwtService.extractUsername(token);
 
-        assertEquals("testUser", username);
-    }
+    assertEquals("testUser", username);
+  }
 
-    @Test
-    void shouldExtractExpiration() {
-        String token = jwtService.generateToken(userDetails);
+  @Test
+  void shouldExtractExpiration() {
+    String token = jwtService.generateToken(userDetails);
 
-        Date expiration = jwtService.extractExpiration(token);
+    Date expiration = jwtService.extractExpiration(token);
 
-        assertNotNull(expiration);
-        assertTrue(expiration.after(new Date()));
-    }
+    assertNotNull(expiration);
+    assertTrue(expiration.after(new Date()));
+  }
 
-    @Test
-    void shouldValidateCorrectToken() {
-        String token = jwtService.generateToken(userDetails);
+  @Test
+  void shouldValidateCorrectToken() {
+    String token = jwtService.generateToken(userDetails);
 
-        Boolean isValid = jwtService.validateToken(token, userDetails);
+    Boolean isValid = jwtService.validateToken(token, userDetails);
 
-        assertTrue(isValid);
-    }
+    assertTrue(isValid);
+  }
 
-    @Test
-    void shouldFailValidationForDifferentUser() {
-        String token = jwtService.generateToken(userDetails);
+  @Test
+  void shouldFailValidationForDifferentUser() {
+    String token = jwtService.generateToken(userDetails);
 
-        UserDetails anotherUser =
-                new User("anotherUser", "password", Collections.emptyList());
+    UserDetails anotherUser = new User("anotherUser", "password", Collections.emptyList());
 
-        Boolean isValid = jwtService.validateToken(token, anotherUser);
+    Boolean isValid = jwtService.validateToken(token, anotherUser);
 
-        assertFalse(isValid);
-    }
+    assertFalse(isValid);
+  }
 
-    @Test
-    void shouldFailForExpiredToken() throws Exception {
-        setField(jwtService, "expiration", 1L);
-        String token = jwtService.generateToken(userDetails);
-        Thread.sleep(5);
-        assertThrows(ExpiredJwtException.class, () -> {
-                jwtService.validateToken(token, userDetails);
+  @Test
+  void shouldFailForExpiredToken() throws Exception {
+    setField(jwtService, "expiration", 1L);
+    String token = jwtService.generateToken(userDetails);
+    Thread.sleep(5);
+    assertThrows(
+        ExpiredJwtException.class,
+        () -> {
+          jwtService.validateToken(token, userDetails);
         });
-    }
+  }
 }

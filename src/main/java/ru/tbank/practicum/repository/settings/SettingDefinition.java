@@ -7,18 +7,18 @@ import lombok.Getter;
 @Getter
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = BooleanDefinition.class, name = "boolean"),
-    @JsonSubTypes.Type(value = FloatDefinition.class, name = "number"),
-    @JsonSubTypes.Type(value = StringDefinition.class, name = "string")
+  @JsonSubTypes.Type(value = BooleanDefinition.class, name = "boolean"),
+  @JsonSubTypes.Type(value = FloatDefinition.class, name = "number"),
+  @JsonSubTypes.Type(value = StringDefinition.class, name = "string")
 })
 public abstract class SettingDefinition {
-    private final String name;
-    private final Object defaultValue;
+  private final String name;
+  private final Object defaultValue;
 
-    public SettingDefinition(String name, Object defaultValue) {
-        this.name = name;
-        this.defaultValue = defaultValue;
-    }
+  public SettingDefinition(String name, Object defaultValue) {
+    this.name = name;
+    this.defaultValue = defaultValue;
+  }
 
-    public abstract Object convertAndValidate(Object value) throws IllegalArgumentException;
+  public abstract Object convertAndValidate(Object value) throws IllegalArgumentException;
 }

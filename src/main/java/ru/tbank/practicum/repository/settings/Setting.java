@@ -10,40 +10,38 @@ import ru.tbank.practicum.exception.NoSuchSettingFound;
 import ru.tbank.practicum.repository.entity.DeviceModel;
 
 public class Setting {
-    @Getter
-    @JsonIgnore
-    private final DeviceModel deviceModel;
+  @Getter @JsonIgnore private final DeviceModel deviceModel;
 
-    private final Map<String, Object> values = new HashMap<>();
+  private final Map<String, Object> values = new HashMap<>();
 
-    public Setting(DeviceModel deviceModel) {
-        this.deviceModel = deviceModel;
-        deviceModel.getSettings().forEach(x -> this.set(x.getName(), x.getDefaultValue()));
+  public Setting(DeviceModel deviceModel) {
+    this.deviceModel = deviceModel;
+    deviceModel.getSettings().forEach(x -> this.set(x.getName(), x.getDefaultValue()));
+  }
+
+  public Setting(DeviceModel deviceModel, Map<String, Object> values) {
+    this(deviceModel);
+    values.forEach(this::set);
+  }
+
+  public void set(String name, Object value) {
+    SettingDefinition currentDefinition = deviceModel.getSetting(name);
+    if (currentDefinition == null) {
+      throw new NoSuchSettingFound("There is no such setting as " + name);
     }
+    values.put(name, currentDefinition.convertAndValidate(value));
+  }
 
-    public Setting(DeviceModel deviceModel, Map<String, Object> values) {
-        this(deviceModel);
-        values.forEach(this::set);
-    }
+  public void setMap(Map<String, Object> newValues) {
+    newValues.forEach(this::set);
+  }
 
-    public void set(String name, Object value) {
-        SettingDefinition currentDefinition = deviceModel.getSetting(name);
-        if (currentDefinition == null) {
-            throw new NoSuchSettingFound("There is no such setting as " + name);
-        }
-        values.put(name, currentDefinition.convertAndValidate(value));
-    }
+  public Object get(String name) {
+    return values.get(name);
+  }
 
-    public void setMap(Map<String, Object> newValues) {
-        newValues.forEach(this::set);
-    }
-
-    public Object get(String name) {
-        return values.get(name);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getValues() {
-        return Collections.unmodifiableMap(values);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getValues() {
+    return Collections.unmodifiableMap(values);
+  }
 }

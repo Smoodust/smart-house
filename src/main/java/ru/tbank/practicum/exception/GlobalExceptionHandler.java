@@ -8,15 +8,15 @@ import ru.tbank.practicum.exception.dto.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(DeviceNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleDeviceNotFound(DeviceNotFoundException ex) {
-        return new ErrorResponse(ex.getMessage());
-    }
+  @ExceptionHandler(DeviceNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorResponse handleDeviceNotFound(DeviceNotFoundException ex) {
+    return new ErrorResponse(ex.getMessage());
+  }
 
-    @ExceptionHandler(NoSuchSettingFound.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleSettingNotFound(DeviceNotFoundException ex) {
-        return new ErrorResponse(ex.getMessage());
-    }
+  @ExceptionHandler(NoSuchSettingFound.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorResponse handleSettingNotFound(DeviceNotFoundException ex) {
+    return new ErrorResponse(ex.getMessage());
+  }
 }

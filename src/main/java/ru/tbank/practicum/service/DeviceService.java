@@ -18,59 +18,57 @@ import ru.tbank.practicum.repository.settings.SettingDefinition;
 
 @Service
 public class DeviceService {
-    private final DeviceRepository deviceRepository;
-    private final UserService userService;
-    private final HistoricalDataRepository historicalDataRepository;
+  private final DeviceRepository deviceRepository;
+  private final UserService userService;
+  private final HistoricalDataRepository historicalDataRepository;
 
-    public DeviceService(
-            DeviceRepository deviceRepository,
-            UserService userService,
-            HistoricalDataRepository historicalDataRepository) {
-        this.deviceRepository = deviceRepository;
-        this.userService = userService;
-        this.historicalDataRepository = historicalDataRepository;
+  public DeviceService(
+      DeviceRepository deviceRepository,
+      UserService userService,
+      HistoricalDataRepository historicalDataRepository) {
+    this.deviceRepository = deviceRepository;
+    this.userService = userService;
+    this.historicalDataRepository = historicalDataRepository;
+  }
+
+  public List<Device> getAllDevices(UserDetails userDetails) {
+    Optional<User> user = userService.getUserByUserDetail(userDetails);
+    if (user.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return deviceRepository.findAllByUserId(user.get().getId());
+  }
+
+  public Device getDeviceById(long id, UserDetails userDetails) {
+    Optional<User> user = userService.getUserByUserDetail(userDetails);
+    if (user.isEmpty()) {
+      throw new IllegalArgumentException("Error with authorization!");
     }
 
-    public List<Device> getAllDevices(UserDetails userDetails) {
-        Optional<User> user = userService.getUserByUserDetail(userDetails);
-        if (user.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return deviceRepository.findAllByUserId(user.get().getId());
+    Optional<Device> device = deviceRepository.findById(id);
+    if (device.isEmpty()) {
+      throw new DeviceNotFoundException("Device not found with id " + id);
     }
-
-    public Device getDeviceById(long id, UserDetails userDetails) {
-        Optional<User> user = userService.getUserByUserDetail(userDetails);
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("Error with authorization!");
-        }
-
-        Optional<Device> device = deviceRepository.findById(id);
-        if (device.isEmpty()) {
-            throw new DeviceNotFoundException("Device not found with id " + id);
-        }
-        if (!Objects.equals(
-                device.get().getLocation().getUser().getId(), user.get().getId())) {
-            throw new IllegalArgumentException("Forbidden to access others device!");
-        }
-        return device.get();
+    if (!Objects.equals(device.get().getLocation().getUser().getId(), user.get().getId())) {
+      throw new IllegalArgumentException("Forbidden to access others device!");
     }
+    return device.get();
+  }
 
-    public void updateDeviceState(long id, Map<String, Object> newValues, UserDetails userDetails) {
-        Device device = getDeviceById(id, userDetails);
+  public void updateDeviceState(long id, Map<String, Object> newValues, UserDetails userDetails) {
+    Device device = getDeviceById(id, userDetails);
 
-        HistoricalDeviceData data = new HistoricalDeviceData();
-        HashMap<String, Object> newData =
-                new HashMap<>(device.getLastHistoricalData().getSettings());
-        for (Map.Entry<String, Object> entry : newValues.entrySet()) {
-            String name = entry.getKey();
-            SettingDefinition current = device.getModel().getSetting(name);
-            if (current != null) {
-                newData.put(name, current.convertAndValidate(entry.getValue()));
-            }
-        }
-        data.setSettings(newData);
-        device.addNewData(data);
-        deviceRepository.save(device);
+    HistoricalDeviceData data = new HistoricalDeviceData();
+    HashMap<String, Object> newData = new HashMap<>(device.getLastHistoricalData().getSettings());
+    for (Map.Entry<String, Object> entry : newValues.entrySet()) {
+      String name = entry.getKey();
+      SettingDefinition current = device.getModel().getSetting(name);
+      if (current != null) {
+        newData.put(name, current.convertAndValidate(entry.getValue()));
+      }
     }
+    data.setSettings(newData);
+    device.addNewData(data);
+    deviceRepository.save(device);
+  }
 }

@@ -18,22 +18,23 @@ import ru.tbank.practicum.service.JwtService;
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
-    private final AuthenticationManager authenticationManager;
-    private final MyUserDetailsService myUserDetailsService;
-    private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
+  private final MyUserDetailsService myUserDetailsService;
+  private final JwtService jwtService;
 
-    @PostMapping("/auth")
-    @Operation(summary = "Authenticate and get JWT token", security = @SecurityRequirement(name = ""))
-    public AuthResponse createAuthenticationToken(@Valid @RequestBody AuthRequest request) throws Exception {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPass()));
-        } catch (Exception e) {
-            throw new Exception("Invalid credentials", e);
-        }
-        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(request.getLogin());
-        final String jwt = jwtService.generateToken(userDetails);
-
-        return new AuthResponse(jwt);
+  @PostMapping("/auth")
+  @Operation(summary = "Authenticate and get JWT token", security = @SecurityRequirement(name = ""))
+  public AuthResponse createAuthenticationToken(@Valid @RequestBody AuthRequest request)
+      throws Exception {
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPass()));
+    } catch (Exception e) {
+      throw new Exception("Invalid credentials", e);
     }
+    final UserDetails userDetails = myUserDetailsService.loadUserByUsername(request.getLogin());
+    final String jwt = jwtService.generateToken(userDetails);
+
+    return new AuthResponse(jwt);
+  }
 }
