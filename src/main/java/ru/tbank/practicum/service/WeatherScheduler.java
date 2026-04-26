@@ -11,11 +11,14 @@ import ru.tbank.practicum.repository.entity.WeatherLocation;
 
 @Service
 public class WeatherScheduler {
-    @Autowired
-    private WeatherService weatherService;
+    private final WeatherService weatherService;
+    private final WeatherRepository weatherRepository;
 
-    @Autowired
-    private WeatherRepository weatherRepository;
+    public WeatherScheduler(WeatherService weatherService,
+                            WeatherRepository weatherRepository) {
+        this.weatherService = weatherService;
+        this.weatherRepository = weatherRepository;
+    }
 
     @Scheduled(cron = "0 0 * * * *")
     public void updateWeatherLocationInfo() {

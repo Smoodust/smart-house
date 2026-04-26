@@ -1,13 +1,6 @@
 package ru.tbank.practicum;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -20,6 +13,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.tbank.practicum.repository.UserRepository;
 import ru.tbank.practicum.repository.entity.User;
 import ru.tbank.practicum.service.UserService;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -50,7 +51,7 @@ public class UserServiceTest {
             }
 
             @Override
-            public @Nullable String getPassword() {
+            public String getPassword() {
                 return password;
             }
 
