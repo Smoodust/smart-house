@@ -42,7 +42,7 @@ test:
 # 1. Build Java project with Gradle
 build-java:
 	@echo "Building Java project..."
-	$(GRADLE) build
+	$(GRADLE) build bootJar
 	@echo "JAR created at $(JAR_FILE)"
 
 # ----------------------------------------------------------------------

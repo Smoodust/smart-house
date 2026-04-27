@@ -1,6 +1,6 @@
 spring:
   main:
-    web-aplication-type: servlet
+    web-application-type: servlet
   datasource:
     url: jdbc:postgresql://db:5432/mydatabase
     username: myuser
@@ -10,6 +10,11 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: test-group
+      auto-offset-reset: earliest
 weather:
   api:
     key: ${WEATHER_API_KEY}
