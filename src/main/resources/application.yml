@@ -1,4 +1,6 @@
 spring:
+  main:
+    web-aplication-type: servlet
   datasource:
     url: jdbc:postgresql://db:5432/mydatabase
     username: myuser

@@ -16,17 +16,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WeatherLocation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "weather_id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "weather_id")
+  private Long id;
 
-    @Column(name = "latitude")
-    private double latitude;
+  @Column(name = "latitude")
+  private double latitude;
 
-    @Column(name = "longtitude")
-    private double longtitude;
+  @Column(name = "longtitude")
+  private double longtitude;
 
-    @Column(name = "temperature")
-    private double temperature;
+  @Column(name = "temperature")
+  private double temperature;
 }

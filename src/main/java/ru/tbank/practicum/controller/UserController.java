@@ -13,10 +13,10 @@ import ru.tbank.practicum.service.UserService;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
+  private final UserService userService;
 
-    @PostMapping("/register")
-    public void register(@Valid @RequestBody AuthRequest request) {
-        userService.register(request.getLogin(), request.getPass());
-    }
+  @PostMapping("/register")
+  public void register(@Valid @RequestBody AuthRequest request) {
+    userService.register(request.getLogin(), request.getPass());
+  }
 }

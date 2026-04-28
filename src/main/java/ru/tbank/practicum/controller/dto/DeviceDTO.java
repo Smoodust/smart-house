@@ -10,16 +10,15 @@ import ru.tbank.practicum.repository.settings.Setting;
 @Setter
 @AllArgsConstructor
 public class DeviceDTO {
-    private Long id;
-    private Long idModel;
-    private String name;
-    private Setting setting;
+  private Long id;
+  private Long idModel;
+  private String name;
+  private Setting setting;
 
-    public DeviceDTO(Device device) {
-        this.id = device.getId();
-        this.idModel = device.getModel().getModelId();
-        this.name = device.getName();
-        this.setting =
-                new Setting(device.getModel(), device.getLastHistoricalData().getSettings());
-    }
+  public DeviceDTO(Device device) {
+    this.id = device.getId();
+    this.idModel = device.getModel().getModelId();
+    this.name = device.getName();
+    this.setting = new Setting(device.getModel(), device.getLastHistoricalData().getSettings());
+  }
 }

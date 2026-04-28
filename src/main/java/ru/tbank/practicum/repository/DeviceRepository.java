@@ -10,8 +10,8 @@ import ru.tbank.practicum.repository.entity.Device;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
-    Optional<Device> findById(Long id);
+  Optional<Device> findById(Long id);
 
-    @Query("SELECT d FROM Device d WHERE d.location.user.id = :userId")
-    List<Device> findAllByUserId(@Param("userId") Long userId);
+  @Query("SELECT d FROM Device d WHERE d.location.user.id = :userId")
+  List<Device> findAllByUserId(@Param("userId") Long userId);
 }

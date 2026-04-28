@@ -5,7 +5,6 @@
 # Variables – change if needed
 GRADLE    = gradlew
 DOCKER    = docker-compose
-GRADLE_TASK = build -x spotlessJavaCheck
 JAR_FILE  = build/libs/app.jar
 
 # Default target: show available commands
@@ -28,10 +27,22 @@ help:
 	@echo "  all           - Same as rebuild"
 
 # ----------------------------------------------------------------------
+# Run Spotless formatting + checks
+spotless:
+	@echo "Running Spotless..."
+	$(GRADLE) spotlessApply spotlessCheck
+
+# ----------------------------------------------------------------------
+# Run tests
+test:
+	@echo "Running tests..."
+	$(GRADLE) test
+
+# ----------------------------------------------------------------------
 # 1. Build Java project with Gradle
 build-java:
 	@echo "Building Java project..."
-	$(GRADLE) $(GRADLE_TASK)
+	$(GRADLE) build
 	@echo "JAR created at $(JAR_FILE)"
 
 # ----------------------------------------------------------------------
@@ -53,7 +64,7 @@ docker-reload: docker-down docker-up
 
 # ----------------------------------------------------------------------
 # 3. Full rebuild and deploy (the workflow you described)
-rebuild: docker-down build-java docker-build docker-up
+rebuild: docker-down spotless test build-java docker-build docker-up
 	@echo "All done! Containers are running."
 
 # Alias for convenience

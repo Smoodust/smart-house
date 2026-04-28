@@ -10,18 +10,19 @@ import ru.tbank.practicum.repository.entity.User;
 
 @Component
 public class MyUserDetailsService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository
-                .findByLogin(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with such username don't exist!"));
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getLogin())
-                .password(user.getPassHash())
-                .roles(user.getRoles().toArray(new String[0]))
-                .build();
-    }
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user =
+        userRepository
+            .findByLogin(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User with such username don't exist!"));
+    return org.springframework.security.core.userdetails.User.builder()
+        .username(user.getLogin())
+        .password(user.getPassHash())
+        .roles(user.getRoles().toArray(new String[0]))
+        .build();
+  }
 }

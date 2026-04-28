@@ -20,25 +20,23 @@ import ru.tbank.practicum.service.DeviceService;
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/device")
 public class DeviceController {
-    private final DeviceService deviceService;
+  private final DeviceService deviceService;
 
-    @GetMapping("")
-    List<DeviceDTO> getAllDevices(@AuthenticationPrincipal UserDetails userDetails) {
-        return deviceService.getAllDevices(userDetails).stream()
-                .map(DeviceDTO::new)
-                .toList();
-    }
+  @GetMapping("")
+  List<DeviceDTO> getAllDevices(@AuthenticationPrincipal UserDetails userDetails) {
+    return deviceService.getAllDevices(userDetails).stream().map(DeviceDTO::new).toList();
+  }
 
-    @GetMapping("/{id}")
-    DeviceDTO getDevice(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
-        return new DeviceDTO(deviceService.getDeviceById(id, userDetails));
-    }
+  @GetMapping("/{id}")
+  DeviceDTO getDevice(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    return new DeviceDTO(deviceService.getDeviceById(id, userDetails));
+  }
 
-    @PatchMapping("/{id}")
-    public void updateDeviceState(
-            @PathVariable Long id,
-            @RequestBody Map<String, Object> payload,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        deviceService.updateDeviceState(id, payload, userDetails);
-    }
+  @PatchMapping("/{id}")
+  public void updateDeviceState(
+      @PathVariable Long id,
+      @RequestBody Map<String, Object> payload,
+      @AuthenticationPrincipal UserDetails userDetails) {
+    deviceService.updateDeviceState(id, payload, userDetails);
+  }
 }
