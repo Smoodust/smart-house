@@ -1,0 +1,321 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1776061394232-1
+      author: liquibase (generated)
+      changes:
+        - createTable:
+            tableName: device
+            columns:
+              - column:
+                  name: device_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_historical_data_id
+                  type: BIGINT
+              - column:
+                  name: location_id
+                  type: BIGINT
+              - column:
+                  name: model_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 1776061394232-3
+      author: liquibase (generated)
+      changes:
+        - createTable:
+            tableName: device_model
+            columns:
+              - column:
+                  name: model_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: model_name
+                  type: VARCHAR(255)
+              - column:
+                  name: settings
+                  type: JSONB
+
+  - changeSet:
+      id: 1776061394232-5
+      author: liquibase (generated)
+      changes:
+        - createTable:
+            tableName: historical_device_data
+            columns:
+              - column:
+                  name: history_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: device_id
+                  type: BIGINT
+              - column:
+                  name: settings
+                  type: JSONB
+
+  - changeSet:
+      id: 1776061394232-7
+      author: liquibase (generated)
+      changes:
+        - createTable:
+            tableName: location
+            columns:
+              - column:
+                  name: location_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 1776061394232-9
+      author: liquibase (generated)
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  autoIncrement: true
+              - column:
+                  name: role
+                  type: VARCHAR(50)
+
+  - changeSet:
+      id: 1776061394232-10
+      author: liquibase (generated)
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: login
+                  type: VARCHAR(255)
+              - column:
+                  name: pass_hash
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 1776061394232-12
+      author: liquibase (generated)
+      changes:
+        - createTable:
+            tableName: weather_location
+            columns:
+              - column:
+                  name: weather_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: latitude
+                  type: FLOAT
+              - column:
+                  name: longtitude
+                  type: FLOAT
+              - column:
+                  name: temperature
+                  type: FLOAT
+
+
+  - changeSet:
+      id: 1776061394232-13
+      author: liquibase (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: last_historical_data_id
+            indexName: device_last_historical_data_id_key
+            tableName: device
+            unique: true
+            using: btree
+
+  - changeSet:
+      id: 1776061394232-14
+      author: liquibase (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: model_name
+            indexName: device_model_model_name_key
+            tableName: device_model
+            unique: true
+            using: btree
+
+  - changeSet:
+      id: 1776061394232-15
+      author: liquibase (generated)
+      changes:
+        - addPrimaryKey:
+            columnNames: model_id
+            constraintName: device_model_pkey
+            tableName: device_model
+
+  - changeSet:
+      id: 1776061394232-16
+      author: liquibase (generated)
+      changes:
+        - addPrimaryKey:
+            columnNames: device_id
+            constraintName: device_pkey
+            tableName: device
+
+  - changeSet:
+      id: 1776061394232-17
+      author: liquibase (generated)
+      changes:
+        - addPrimaryKey:
+            columnNames: history_id
+            constraintName: historical_device_data_pkey
+            tableName: historical_device_data
+
+  - changeSet:
+      id: 1776061394232-18
+      author: liquibase (generated)
+      changes:
+        - addPrimaryKey:
+            columnNames: location_id
+            constraintName: location_pkey
+            tableName: location
+
+  - changeSet:
+      id: 1776061394232-19
+      author: liquibase (generated)
+      changes:
+        - addPrimaryKey:
+            columnNames: user_id
+            constraintName: users_pkey
+            tableName: users
+
+  - changeSet:
+      id: 1776061394232-20
+      author: liquibase (generated)
+      changes:
+        - addPrimaryKey:
+            columnNames: weather_id
+            constraintName: weather_location_pkey
+            tableName: weather_location
+
+  - changeSet:
+      id: 1776061394232-21
+      author: liquibase (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: device_id
+            baseTableName: historical_device_data
+            constraintName: fk3ekuxx6auecc9m9r5j4xcmbkb
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: device_id
+            referencedTableName: device
+            validate: true
+
+  - changeSet:
+      id: 1776061394232-22
+      author: liquibase (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: location
+            constraintName: fk55by463ivfy1u1qfylnjswyje
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: user_id
+            referencedTableName: users
+            validate: true
+
+  - changeSet:
+      id: 1776061394232-23
+      author: liquibase (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: model_id
+            baseTableName: device
+            constraintName: fkch9gvpjv04rlquq9hv34s1i6e
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: model_id
+            referencedTableName: device_model
+            validate: true
+
+  - changeSet:
+      id: 1776061394232-24
+      author: liquibase (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_roles
+            constraintName: fkhfh9dx7w3ubf1co1vdev94g3f
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: user_id
+            referencedTableName: users
+            validate: true
+
+  - changeSet:
+      id: 1776061394232-25
+      author: liquibase (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: location_id
+            baseTableName: device
+            constraintName: fkpi1ebkqu0bc3f3yh500kyf1m8
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: location_id
+            referencedTableName: location
+            validate: true
+
+  - changeSet:
+      id: 1776061394232-26
+      author: liquibase (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: last_historical_data_id
+            baseTableName: device
+            constraintName: fkpor7s6wu1t7snwgm5w4fio346
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: history_id
+            referencedTableName: historical_device_data
+            validate: true

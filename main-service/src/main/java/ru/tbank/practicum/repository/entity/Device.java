@@ -23,6 +23,9 @@ public class Device {
   @Column(name = "name", nullable = false)
   private String name;
 
+  @Column(name = "external_id", nullable = false)
+  private String externalId;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "model_id", nullable = false)
   private DeviceModel model;

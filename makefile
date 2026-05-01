@@ -52,8 +52,8 @@ docker-down:
 	$(DOCKER) down
 
 docker-build:
-	@echo "Building Docker images (--no-cache)..."
-	$(DOCKER) build --no-cache
+	@echo "Building Docker images..."
+	$(DOCKER) build
 
 docker-up:
 	@echo "Starting containers..."

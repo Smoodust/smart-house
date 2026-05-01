@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: bridge
+  kafka:
+    bootstrap-servers=kafka:9092
+
+mqtt:
+  broker: tcp://mosquitto:1883
+  clientId: backend-bridge
+  username: backendUser
+  password: backendPass
+  topic:
+    telemetry: hubs/data
+    command: hubs/{hubId}/command
+
+kafka:
+  topic:
+    data: hub.data

@@ -61,13 +61,13 @@ public class TestDataLoader {
     DeviceModel blinds =
         createAndSaveDeviceModel("Blinds", List.of(powerSetting, positionOfBlindsSetting));
 
-    createAndSaveDevice("Kitchen Heater", heater, loc1);
-    createAndSaveDevice("Bedroom Heater", heater, loc2);
-    createAndSaveDevice("Kitchen Lamp", simpleLamp, loc1);
-    createAndSaveDevice("Bedroom Lamp", simpleLamp, loc2);
-    createAndSaveDevice("Hallway Lamp", simpleLamp, loc3);
-    createAndSaveDevice("Club Lamp", danceLamp, loc4);
-    createAndSaveDevice("Bedroom Blind", blinds, loc5);
+    createAndSaveDevice("Kitchen Heater", "kitchen_heater", heater, loc1);
+    createAndSaveDevice("Bedroom Heater", "bedroom_heater", heater, loc2);
+    createAndSaveDevice("Kitchen Lamp", "kitchen_lamp", simpleLamp, loc1);
+    createAndSaveDevice("Bedroom Lamp", "bedroom_lamp", simpleLamp, loc2);
+    createAndSaveDevice("Hallway Lamp", "hallway_lamp", simpleLamp, loc3);
+    createAndSaveDevice("Club Lamp", "club_lamp", danceLamp, loc4);
+    createAndSaveDevice("Bedroom Blind", "bedroom_blind", blinds, loc5);
   }
 
   private User createAndSaveUser(String login, String password) {
@@ -93,11 +93,13 @@ public class TestDataLoader {
     return deviceModelRepository.save(model);
   }
 
-  private Device createAndSaveDevice(String name, DeviceModel model, Location location) {
+  private Device createAndSaveDevice(
+      String name, String externalId, DeviceModel model, Location location) {
     Device device = new Device();
     device.setName(name);
     device.setModel(model);
     device.setLocation(location);
+    device.setExternalId(externalId);
     Map<String, Object> updates = new HashMap<>();
     for (SettingDefinition definition : model.getSettings()) {
       updates.put(definition.getName(), definition.getDefaultValue());

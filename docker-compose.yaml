@@ -38,6 +38,8 @@ services:
         fi &&
         /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/kraft/server.properties
       "
+    networks:
+      - kafka-net
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -48,6 +50,39 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    networks:
+      - kafka-net
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+    networks:
+      - mqtt-net
+
+  bridge:
+    build: ./bridge
+    restart: on-failure
+    depends_on:
+      kafka:
+        condition: service_started
+      mosquitto:
+        condition: service_started
+    env_file:
+      - .env
+    networks:
+      - mqtt-net
+      - kafka-net
+
+  test-hub:
+    build: ./test-hub
+    command: uv run main.py
+    depends_on:
+      - bridge
+    networks:
+      - mqtt-net
 
   backend:
     build: ./main-service
@@ -63,3 +98,11 @@ services:
       - .env
     ports:
       - "8080:8080"
+    networks:
+      - kafka-net
+
+networks:
+  mqtt-net:
+    driver: bridge
+  kafka-net:
+    driver: bridge
