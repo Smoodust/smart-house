@@ -20,10 +20,13 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
+
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
     compileOnly 'org.projectlombok:lombok'
@@ -38,10 +41,58 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
-tasks.named('test') {
+tasks.named('bootJar') {
+    archiveFileName = 'app.jar'
+}
+
+tasks.named('test', Test) {
     useJUnitPlatform()
 }
 
 tasks.named('bootJar') {
     archiveFileName = 'app.jar'
+}
+
+jacoco {
+    toolVersion = "0.8.14"
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/repository/**',
+                    '**/dto/**',
+                    '**/exception/**',
+                    '**/Main.class'
+            ])
+        }))
+    }
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.50
+            }
+        }
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/repository/**',
+                    '**/dto/**',
+                    '**/exception/**',
+                    '**/Main.class'
+            ])
+        }))
+    }
 }

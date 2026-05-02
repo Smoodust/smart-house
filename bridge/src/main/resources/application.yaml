@@ -2,17 +2,21 @@ spring:
   application:
     name: bridge
   kafka:
-    bootstrap-servers=kafka:9092
+    bootstrap-servers: kafka:9092
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "ru.tbank.common.dto"
 
 mqtt:
   broker: tcp://mosquitto:1883
   clientId: backend-bridge
-  username: backendUser
-  password: backendPass
+  username: iambridginit
+  password: Tw21#_$5g(9\
   topic:
     telemetry: hubs/data
-    command: hubs/{hubId}/command
 
 kafka:
   topic:
-    data: hub.data
+    data: hubs.data

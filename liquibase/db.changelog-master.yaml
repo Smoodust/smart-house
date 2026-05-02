@@ -319,3 +319,32 @@ databaseChangeLog:
             referencedColumnNames: history_id
             referencedTableName: historical_device_data
             validate: true
+  - changeSet:
+      id: add-external-id-to-device
+      author: pluton
+      changes:
+        - addColumn:
+            tableName: device
+            columns:
+              - column:
+                  name: external_id
+                  type: varchar(255)
+        - sql: >
+            UPDATE device SET external_id = 'UNKNOWN' WHERE external_id IS NULL;
+        - addNotNullConstraint:
+            tableName: device
+            columnName: external_id
+            columnDataType: varchar(255)
+  - changeSet:
+      id: add-recorded-at-to-historical-device-data
+      author: pluton
+      changes:
+        - addColumn:
+            tableName: historical_device_data
+            columns:
+              - column:
+                  name: recorded_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: NOW()

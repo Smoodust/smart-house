@@ -1,6 +1,7 @@
 package ru.tbank.practicum.repository.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,9 @@ public class HistoricalDeviceData {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "history_id")
   private Long history_id;
+
+  @Column(name = "recorded_at", nullable = false)
+  private Instant recordedAt;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "settings", columnDefinition = "jsonb", nullable = false)

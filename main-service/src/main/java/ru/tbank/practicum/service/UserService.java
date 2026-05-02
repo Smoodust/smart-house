@@ -31,6 +31,22 @@ public class UserService {
     userRepository.save(user);
   }
 
+  public User getUserByLogin(String login) {
+    Optional<User> user = userRepository.findByLogin(login);
+    if (user.isEmpty()) {
+      throw new IllegalArgumentException("There is no such user!");
+    }
+    return user.get();
+  }
+
+  public User getUserByLoginAndPass(String login, String pass) {
+    User user = getUserByLogin(login);
+    if (!passwordEncoder.matches(pass, user.getPassHash())) {
+      throw new IllegalArgumentException("Password don't match!");
+    }
+    return user;
+  }
+
   public Optional<User> getUserByUserDetail(UserDetails userDetails) {
     return userRepository.findByLogin(userDetails.getUsername());
   }

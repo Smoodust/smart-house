@@ -1,13 +1,14 @@
-package ru.tbank.bridge;
+package ru.tbank.bridge.configuration;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import ru.tbank.bridge.service.MessageValidator;
+
+import java.util.Objects;
 
 @Component
 public class MQTTMessageHandler implements MqttCallback {
@@ -27,8 +28,7 @@ public class MQTTMessageHandler implements MqttCallback {
         System.out.println("MQTT connection lost: " + cause.getMessage());
     }
 
-    @Override
-    public void messageArrived(String topic, MqttMessage message) {
+    public void handleHubsData(MqttMessage message) {
         String payload = new String(message.getPayload());
 
         try {
@@ -38,6 +38,13 @@ public class MQTTMessageHandler implements MqttCallback {
             return;
         }
         kafkaTemplate.send(kafkaTopic, payload);
+    }
+
+    @Override
+    public void messageArrived(String topic, MqttMessage message) {
+        if (Objects.equals(topic, "hubs/data")) {
+            handleHubsData(message);
+        }
     }
 
     @Override

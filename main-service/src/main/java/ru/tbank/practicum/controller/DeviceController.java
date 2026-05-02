@@ -37,6 +37,6 @@ public class DeviceController {
       @PathVariable Long id,
       @RequestBody Map<String, Object> payload,
       @AuthenticationPrincipal UserDetails userDetails) {
-    deviceService.updateDeviceState(id, payload, userDetails);
+    deviceService.updateDeviceStateWithUpdate(id, payload, userDetails);
   }
 }

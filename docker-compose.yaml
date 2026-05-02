@@ -12,6 +12,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 100
+    networks:
+      - db-net
 
   liquibase:
     image: liquibase/liquibase:4.33-alpine
@@ -22,6 +24,8 @@ services:
     volumes:
       - ./liquibase:/liquibase/changelog
     command: --url=jdbc:postgresql://db:5432/mydatabase --username=myuser --password=mypassword --changeLogFile=changelog/db.changelog-master.yaml update
+    networks:
+      - db-net
 
   kafka:
     image: apache/kafka:3.7.2
@@ -54,11 +58,14 @@ services:
       - kafka-net
 
   mosquitto:
-    image: eclipse-mosquitto:latest
+    image: iegomez/mosquitto-go-auth:3.0.0-mosquitto_2.0.18
+    depends_on:
+      backend:
+        condition: service_healthy
     ports:
       - "1883:1883"
     volumes:
-      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/config/mosquitto.conf:/etc/mosquitto/mosquitto.conf
     networks:
       - mqtt-net
 
@@ -70,6 +77,14 @@ services:
         condition: service_started
       mosquitto:
         condition: service_started
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     env_file:
       - .env
     networks:
@@ -80,7 +95,10 @@ services:
     build: ./test-hub
     command: uv run main.py
     depends_on:
-      - bridge
+      bridge:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
     networks:
       - mqtt-net
 
@@ -98,11 +116,21 @@ services:
       - .env
     ports:
       - "8080:8080"
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - kafka-net
+      - db-net
+      - mqtt-net
 
 networks:
   mqtt-net:
     driver: bridge
   kafka-net:
+    driver: bridge
+  db-net:
     driver: bridge

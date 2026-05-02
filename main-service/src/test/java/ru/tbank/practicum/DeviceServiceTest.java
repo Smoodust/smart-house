@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.tbank.common.dto.DeviceCommandKafkaDTO;
+import ru.tbank.practicum.exception.DeviceNotFoundException;
 import ru.tbank.practicum.repository.DeviceRepository;
-import ru.tbank.practicum.repository.HistoricalDataRepository;
 import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.repository.entity.DeviceModel;
 import ru.tbank.practicum.repository.entity.HistoricalDeviceData;
@@ -30,7 +32,7 @@ class DeviceServiceTest {
 
   @Mock private UserService userService;
 
-  @Mock private HistoricalDataRepository historicalDataRepository;
+  @Mock private KafkaTemplate<String, Object> kafkaTemplate; // added
 
   @Mock private UserDetails userDetails;
 
@@ -44,6 +46,8 @@ class DeviceServiceTest {
     user = new User();
     user.setId(1L);
   }
+
+  // ---------- getAllDevices ----------
 
   @Test
   void getAllDevices_userExists_returnsDevices() {
@@ -68,6 +72,8 @@ class DeviceServiceTest {
     verifyNoInteractions(deviceRepository);
   }
 
+  // ---------- getDeviceById ----------
+
   @Test
   void getDeviceById_success() {
     Device device = mock(Device.class);
@@ -75,13 +81,12 @@ class DeviceServiceTest {
 
     when(userService.getUserByUserDetail(userDetails)).thenReturn(Optional.of(user));
     when(deviceRepository.findById(10L)).thenReturn(Optional.of(device));
-
     when(device.getLocation()).thenReturn(location);
     when(location.getUser()).thenReturn(user);
 
     Device result = deviceService.getDeviceById(10L, userDetails);
 
-    assertEquals(device, result);
+    assertSame(device, result);
   }
 
   @Test
@@ -90,6 +95,14 @@ class DeviceServiceTest {
 
     assertThrows(
         IllegalArgumentException.class, () -> deviceService.getDeviceById(1L, userDetails));
+  }
+
+  @Test
+  void getDeviceById_deviceNotFound_throwsDeviceNotFoundException() {
+    when(userService.getUserByUserDetail(userDetails)).thenReturn(Optional.of(user));
+    when(deviceRepository.findById(1L)).thenReturn(Optional.empty());
+
+    assertThrows(DeviceNotFoundException.class, () -> deviceService.getDeviceById(1L, userDetails));
   }
 
   @Test
@@ -102,13 +115,14 @@ class DeviceServiceTest {
 
     when(userService.getUserByUserDetail(userDetails)).thenReturn(Optional.of(user));
     when(deviceRepository.findById(1L)).thenReturn(Optional.of(device));
-
     when(device.getLocation()).thenReturn(location);
     when(location.getUser()).thenReturn(anotherUser);
 
     assertThrows(
         IllegalArgumentException.class, () -> deviceService.getDeviceById(1L, userDetails));
   }
+
+  // ---------- updateDeviceState (id-based) ----------
 
   @Test
   void updateDeviceState_validUpdate() {
@@ -166,7 +180,117 @@ class DeviceServiceTest {
 
     deviceService.updateDeviceState(1L, newValues, userDetails);
 
-    verify(device).addNewData(any());
+    verify(device).addNewData(any(HistoricalDeviceData.class));
     verify(deviceRepository).save(device);
+  }
+
+  // ---------- updateDeviceStateWithUpdate ----------
+
+  @Test
+  void updateDeviceStateWithUpdate_sendsKafkaMessage() {
+    // Prepare device
+    Device device = mock(Device.class);
+    Location location = mock(Location.class);
+    DeviceModel model = mock(DeviceModel.class);
+    SettingDefinition volumeSetting = mock(SettingDefinition.class);
+
+    long deviceId = 10L;
+    String externalId = "ext-123";
+    String username = "testUser";
+
+    Map<String, Object> newValues = Map.of("volume", 50, "unknown", 999);
+
+    // getDeviceById setup
+    when(userService.getUserByUserDetail(userDetails)).thenReturn(Optional.of(user));
+    when(deviceRepository.findById(deviceId)).thenReturn(Optional.of(device));
+    when(device.getLocation()).thenReturn(location);
+    when(location.getUser()).thenReturn(user);
+
+    // Device properties
+    when(device.getExternalId()).thenReturn(externalId);
+    when(device.getModel()).thenReturn(model);
+    when(model.getSetting("volume")).thenReturn(volumeSetting);
+    when(model.getSetting("unknown")).thenReturn(null);
+
+    when(volumeSetting.convertAndValidate(50)).thenReturn(50);
+
+    when(userDetails.getUsername()).thenReturn(username);
+
+    // Execute
+    deviceService.updateDeviceStateWithUpdate(deviceId, newValues, userDetails);
+
+    // Verify Kafka message
+    verify(kafkaTemplate).send(eq("hubs.command"), any(DeviceCommandKafkaDTO.class));
+    // Capture and assert details
+    verify(kafkaTemplate)
+        .send(
+            eq("hubs.command"),
+            argThat(
+                dto -> {
+                  DeviceCommandKafkaDTO cmd = (DeviceCommandKafkaDTO) dto;
+                  return username.equals(cmd.getLogin())
+                      && externalId.equals(cmd.getDeviceId())
+                      && cmd.getData().size() == 1
+                      && cmd.getData().get("volume").equals(50);
+                }));
+  }
+
+  @Test
+  void updateDeviceStateWithUpdate_emptyDataStillSends() {
+    Device device = mock(Device.class);
+    Location location = mock(Location.class);
+    DeviceModel model = mock(DeviceModel.class);
+
+    long deviceId = 10L;
+    String externalId = "ext-123";
+    String username = "testUser";
+
+    // All settings unknown
+    Map<String, Object> newValues = Map.of("unknown", 999);
+
+    when(userService.getUserByUserDetail(userDetails)).thenReturn(Optional.of(user));
+    when(deviceRepository.findById(deviceId)).thenReturn(Optional.of(device));
+    when(device.getLocation()).thenReturn(location);
+    when(location.getUser()).thenReturn(user);
+    when(device.getExternalId()).thenReturn(externalId);
+    when(device.getModel()).thenReturn(model);
+    when(model.getSetting("unknown")).thenReturn(null);
+    when(userDetails.getUsername()).thenReturn(username);
+
+    deviceService.updateDeviceStateWithUpdate(deviceId, newValues, userDetails);
+
+    verify(kafkaTemplate)
+        .send(
+            eq("hubs.command"),
+            argThat(
+                dto -> {
+                  DeviceCommandKafkaDTO cmd = (DeviceCommandKafkaDTO) dto;
+                  return username.equals(cmd.getLogin())
+                      && externalId.equals(cmd.getDeviceId())
+                      && cmd.getData().isEmpty();
+                }));
+  }
+
+  @Test
+  void updateDeviceStateWithUpdate_userNotFound_throwsException() {
+    when(userService.getUserByUserDetail(userDetails)).thenReturn(Optional.empty());
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> deviceService.updateDeviceStateWithUpdate(1L, Map.of(), userDetails));
+
+    verifyNoInteractions(kafkaTemplate);
+  }
+
+  @Test
+  void updateDeviceStateWithUpdate_deviceNotFound_throwsException() {
+    when(userService.getUserByUserDetail(userDetails)).thenReturn(Optional.of(user));
+    when(deviceRepository.findById(1L)).thenReturn(Optional.empty());
+
+    assertThrows(
+        DeviceNotFoundException.class,
+        () -> deviceService.updateDeviceStateWithUpdate(1L, Map.of(), userDetails));
+
+    verifyNoInteractions(kafkaTemplate);
   }
 }

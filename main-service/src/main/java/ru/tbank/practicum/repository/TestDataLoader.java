@@ -1,6 +1,7 @@
 package ru.tbank.practicum.repository;
 
 import jakarta.annotation.PostConstruct;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,7 @@ public class TestDataLoader {
       updates.put(definition.getName(), definition.getDefaultValue());
     }
     HistoricalDeviceData data = new HistoricalDeviceData();
+    data.setRecordedAt(Instant.now());
     data.setSettings(updates);
     device.addNewData(data);
     return deviceRepository.save(device);

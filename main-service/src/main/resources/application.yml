@@ -13,8 +13,11 @@ spring:
   kafka:
     bootstrap-servers: kafka:9092
     consumer:
-      group-id: test-group
+      group-id: main-service
       auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 weather:
   api:
     key: ${WEATHER_API_KEY}
@@ -22,3 +25,6 @@ weather:
 jwt:
   secret: ${JWT_SECRET}
   expiration: 3600000
+mqtt-auth:
+  bridge-login: iambridginit
+  bridge-pass: Tw21#_$5g(9\

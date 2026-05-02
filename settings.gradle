@@ -1,4 +1,5 @@
 rootProject.name = 'project-practicum'
 
+include 'common'
 include 'main-service'
 include 'bridge'

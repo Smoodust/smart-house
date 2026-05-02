@@ -1,27 +1,24 @@
-package ru.tbank.practicum;
+package ru.tbank.practicum.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.tbank.practicum.repository.UserRepository;
 import ru.tbank.practicum.repository.entity.User;
-import ru.tbank.practicum.service.UserService;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
+
   @Mock private UserRepository userRepository;
 
   @Mock private PasswordEncoder passwordEncoder;
@@ -29,49 +26,15 @@ public class UserServiceTest {
   @InjectMocks private UserService userService;
 
   @Test
-  void shouldGetAnUser() {
-    String login = "login";
-    String password = "password";
+  void registerShouldSaveNewUser() {
+    String login = "john";
+    String rawPassword = "secret";
+    String encodedPassword = "encodedSecret";
 
-    User existingUser = new User();
-    existingUser.setLogin(login);
-    existingUser.setPassHash(password);
-
-    when(userRepository.findByLogin(login)).thenReturn(Optional.of(existingUser));
-
-    UserDetails userDetails =
-        new UserDetails() {
-          @Override
-          public Collection<? extends GrantedAuthority> getAuthorities() {
-            return List.of();
-          }
-
-          @Override
-          public String getPassword() {
-            return password;
-          }
-
-          @Override
-          public String getUsername() {
-            return login;
-          }
-        };
-
-    Optional<User> user = userService.getUserByUserDetail(userDetails);
-    assertEquals(true, user.isPresent());
-    assertEquals(existingUser, user.get());
-  }
-
-  @Test
-  void shouldRegisterNewUser() {
-    String login = "login";
-    String password = "password";
-    String encodedPassword = "encodedPass";
-
-    when(passwordEncoder.encode(password)).thenReturn(encodedPassword);
+    when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
     when(userRepository.findByLogin(login)).thenReturn(Optional.empty());
 
-    userService.register(login, password);
+    userService.register(login, rawPassword);
 
     ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
     verify(userRepository).save(userCaptor.capture());
@@ -79,23 +42,126 @@ public class UserServiceTest {
     User savedUser = userCaptor.getValue();
     assertEquals(login, savedUser.getLogin());
     assertEquals(encodedPassword, savedUser.getPassHash());
-    assertTrue(savedUser.getRoles().contains("USER"));
+    assertEquals(Set.of("USER"), savedUser.getRoles());
   }
 
   @Test
-  void shouldRegisterThrowAnException() {
-    String login = "login";
-    String password = "password";
+  void registerShouldThrowWhenLoginAlreadyExists() {
+    String login = "existing";
+    String password = "irrelevant";
 
     User existingUser = new User();
     existingUser.setLogin(login);
-
     when(userRepository.findByLogin(login)).thenReturn(Optional.of(existingUser));
 
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> userService.register(login, password));
+    assertEquals("Account with such login already exist!", exception.getMessage());
+    verify(userRepository, never()).save(any());
+  }
+
+  @Test
+  void registerShouldThrowWhenLoginIsNull() {
+    assertThrows(NullPointerException.class, () -> userService.register(null, "password"));
+    verifyNoInteractions(userRepository);
+  }
+
+  @Test
+  void registerShouldThrowWhenPasswordIsNull() {
+    assertThrows(NullPointerException.class, () -> userService.register("login", null));
+    verifyNoInteractions(userRepository);
+  }
+
+  @Test
+  void getUserByLoginShouldReturnUserWhenFound() {
+    String login = "john";
+    User user = new User();
+    user.setLogin(login);
+    when(userRepository.findByLogin(login)).thenReturn(Optional.of(user));
+
+    User result = userService.getUserByLogin(login);
+
+    assertSame(user, result);
+  }
+
+  @Test
+  void getUserByLoginShouldThrowWhenNotFound() {
+    String login = "unknown";
+    when(userRepository.findByLogin(login)).thenReturn(Optional.empty());
+
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> userService.getUserByLogin(login));
+    assertEquals("There is no such user!", exception.getMessage());
+  }
+
+  @Test
+  void getUserByLoginAndPassShouldReturnUserWhenCredentialsMatch() {
+    String login = "john";
+    String rawPassword = "secret";
+    User user = new User();
+    user.setLogin(login);
+    user.setPassHash("storedHash");
+
+    when(userRepository.findByLogin(login)).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(rawPassword, user.getPassHash())).thenReturn(true);
+
+    User result = userService.getUserByLoginAndPass(login, rawPassword);
+
+    assertSame(user, result);
+  }
+
+  @Test
+  void getUserByLoginAndPassShouldThrowWhenUserNotFound() {
+    String login = "ghost";
+    when(userRepository.findByLogin(login)).thenReturn(Optional.empty());
+
     assertThrows(
-        IllegalArgumentException.class,
-        () -> {
-          userService.register(login, password);
-        });
+        IllegalArgumentException.class, () -> userService.getUserByLoginAndPass(login, "any"));
+  }
+
+  @Test
+  void getUserByLoginAndPassShouldThrowWhenPasswordMismatch() {
+    String login = "john";
+    String rawPassword = "wrongPass";
+    User user = new User();
+    user.setLogin(login);
+    user.setPassHash("storedHash");
+
+    when(userRepository.findByLogin(login)).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(rawPassword, user.getPassHash())).thenReturn(false);
+
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> userService.getUserByLoginAndPass(login, rawPassword));
+    assertEquals("Password don't match!", exception.getMessage());
+  }
+
+  @Test
+  void getUserByUserDetailShouldReturnUserWhenFound() {
+    String login = "john";
+    User user = new User();
+    user.setLogin(login);
+
+    UserDetails userDetails = mock(UserDetails.class);
+    when(userDetails.getUsername()).thenReturn(login);
+    when(userRepository.findByLogin(login)).thenReturn(Optional.of(user));
+
+    Optional<User> result = userService.getUserByUserDetail(userDetails);
+
+    assertTrue(result.isPresent());
+    assertSame(user, result.get());
+  }
+
+  @Test
+  void getUserByUserDetailShouldReturnEmptyWhenNotFound() {
+    String login = "unknown";
+    UserDetails userDetails = mock(UserDetails.class);
+    when(userDetails.getUsername()).thenReturn(login);
+    when(userRepository.findByLogin(login)).thenReturn(Optional.empty());
+
+    Optional<User> result = userService.getUserByUserDetail(userDetails);
+
+    assertTrue(result.isEmpty());
   }
 }

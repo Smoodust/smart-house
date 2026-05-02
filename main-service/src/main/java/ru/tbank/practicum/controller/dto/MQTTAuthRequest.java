@@ -1,0 +1,16 @@
+package ru.tbank.practicum.controller.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class MQTTAuthRequest {
+  private String username;
+  private String password;
+  private String clientid;
+}

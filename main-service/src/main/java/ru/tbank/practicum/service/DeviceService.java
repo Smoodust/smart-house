@@ -1,35 +1,30 @@
 package ru.tbank.practicum.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ru.tbank.common.dto.DeviceCommandKafkaDTO;
 import ru.tbank.practicum.exception.DeviceNotFoundException;
 import ru.tbank.practicum.repository.DeviceRepository;
-import ru.tbank.practicum.repository.HistoricalDataRepository;
 import ru.tbank.practicum.repository.entity.Device;
 import ru.tbank.practicum.repository.entity.HistoricalDeviceData;
 import ru.tbank.practicum.repository.entity.User;
 import ru.tbank.practicum.repository.settings.SettingDefinition;
 
+@RequiredArgsConstructor
 @Service
 public class DeviceService {
   private final DeviceRepository deviceRepository;
   private final UserService userService;
-  private final HistoricalDataRepository historicalDataRepository;
-
-  public DeviceService(
-      DeviceRepository deviceRepository,
-      UserService userService,
-      HistoricalDataRepository historicalDataRepository) {
-    this.deviceRepository = deviceRepository;
-    this.userService = userService;
-    this.historicalDataRepository = historicalDataRepository;
-  }
+  private final KafkaTemplate<String, Object> kafkaTemplate;
 
   public List<Device> getAllDevices(UserDetails userDetails) {
     Optional<User> user = userService.getUserByUserDetail(userDetails);
@@ -55,9 +50,7 @@ public class DeviceService {
     return device.get();
   }
 
-  public void updateDeviceState(long id, Map<String, Object> newValues, UserDetails userDetails) {
-    Device device = getDeviceById(id, userDetails);
-
+  public void updateDeviceState(Device device, Map<String, Object> newValues) {
     HistoricalDeviceData data = new HistoricalDeviceData();
     HashMap<String, Object> newData = new HashMap<>(device.getLastHistoricalData().getSettings());
     for (Map.Entry<String, Object> entry : newValues.entrySet()) {
@@ -68,7 +61,33 @@ public class DeviceService {
       }
     }
     data.setSettings(newData);
+    data.setRecordedAt(Instant.now());
     device.addNewData(data);
     deviceRepository.save(device);
+  }
+
+  public void updateDeviceState(long id, Map<String, Object> newValues, UserDetails userDetails) {
+    Device device = getDeviceById(id, userDetails);
+    updateDeviceState(device, newValues);
+  }
+
+  public void updateDeviceStateWithUpdate(
+      long id, Map<String, Object> newValues, UserDetails userDetails) {
+    Device device = getDeviceById(id, userDetails);
+
+    HashMap<String, Object> newData = new HashMap<>();
+    for (Map.Entry<String, Object> entry : newValues.entrySet()) {
+      String name = entry.getKey();
+      SettingDefinition current = device.getModel().getSetting(name);
+      if (current != null) {
+        newData.put(name, current.convertAndValidate(entry.getValue()));
+      }
+    }
+
+    DeviceCommandKafkaDTO result = new DeviceCommandKafkaDTO();
+    result.setLogin(userDetails.getUsername());
+    result.setDeviceId(device.getExternalId());
+    result.setData(newData);
+    kafkaTemplate.send("hubs.command", result);
   }
 }
