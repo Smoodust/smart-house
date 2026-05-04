@@ -45,18 +45,6 @@ services:
     networks:
       - kafka-net
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - "8090:8080"
-    depends_on:
-      - kafka
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-    networks:
-      - kafka-net
-
   mosquitto:
     image: iegomez/mosquitto-go-auth:3.0.0-mosquitto_2.0.18
     depends_on:
