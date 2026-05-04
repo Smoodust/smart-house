@@ -85,11 +85,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    ports:
+      - "8081:8080"
     env_file:
       - .env
     networks:
       - mqtt-net
       - kafka-net
+      - prometheus-net
 
   test-hub:
     build: ./test-hub
@@ -126,6 +129,39 @@ services:
       - kafka-net
       - db-net
       - mqtt-net
+      - prometheus-net
+
+  prometheus:
+    image: prom/prometheus:v3.11.3-distroless
+    depends_on:
+      backend:
+        condition: service_healthy
+      bridge:
+        condition: service_healthy
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - prometheus-net
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./grafana/provisioning/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - prometheus-net
 
 networks:
   mqtt-net:
@@ -133,4 +169,6 @@ networks:
   kafka-net:
     driver: bridge
   db-net:
+    driver: bridge
+  prometheus-net:
     driver: bridge

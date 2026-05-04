@@ -1,5 +1,7 @@
 package ru.tbank.bridge.configuration;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -14,13 +16,17 @@ import java.util.Objects;
 public class MQTTMessageHandler implements MqttCallback {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final MessageValidator messageValidator;
+    private final Counter hubsDataSucessfulRequest;
+    private final Counter hubsDataTotalRequest;
 
     @Value("${kafka.topic.data}")
     private String kafkaTopic;
 
-    public MQTTMessageHandler(KafkaTemplate<String, String> kafkaTemplate, MessageValidator messageValidator) {
+    public MQTTMessageHandler(KafkaTemplate<String, String> kafkaTemplate, MessageValidator messageValidator, MeterRegistry registry) {
         this.kafkaTemplate = kafkaTemplate;
         this.messageValidator = messageValidator;
+        this.hubsDataSucessfulRequest = registry.counter("mqtt_hubs_data_sucessful_requests");
+        this.hubsDataTotalRequest = registry.counter("mqtt_hubs_data_total_requests");
     }
 
     @Override
@@ -29,6 +35,8 @@ public class MQTTMessageHandler implements MqttCallback {
     }
 
     public void handleHubsData(MqttMessage message) {
+        hubsDataTotalRequest.increment();
+
         String payload = new String(message.getPayload());
 
         try {
@@ -38,6 +46,7 @@ public class MQTTMessageHandler implements MqttCallback {
             return;
         }
         kafkaTemplate.send(kafkaTopic, payload);
+        hubsDataSucessfulRequest.increment();
     }
 
     @Override

@@ -18,10 +18,24 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+    prometheus:
+      enabled: true
+    metrics:
+      tags:
+        application: main-service
+
 weather:
   api:
     key: ${WEATHER_API_KEY}
     url: https://api.openweathermap.org/data/2.5/weather
+
 jwt:
   secret: ${JWT_SECRET}
   expiration: 3600000

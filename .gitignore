@@ -47,3 +47,6 @@ bin/
 
 ### Enviromental variables ###
 .env
+
+### Grafana data
+/grafana/data
