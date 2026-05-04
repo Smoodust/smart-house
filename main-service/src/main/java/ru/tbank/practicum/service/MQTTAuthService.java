@@ -59,8 +59,11 @@ public class MQTTAuthService {
         if (allowed) {
           log.debug("MQTT ACL SUBSCRIBE allowed for user '{}' on topic '{}'", username, topic);
         } else {
-          log.info("MQTT ACL SUBSCRIBE denied for user '{}' on topic '{}' (expected '{}')",
-                  username, topic, "hubs/" + user.getLogin() + "/commands");
+          log.info(
+              "MQTT ACL SUBSCRIBE denied for user '{}' on topic '{}' (expected '{}')",
+              username,
+              topic,
+              "hubs/" + user.getLogin() + "/commands");
         }
         return allowed;
       } else {
@@ -68,8 +71,10 @@ public class MQTTAuthService {
         if (allowed) {
           log.debug("MQTT ACL PUBLISH allowed for user '{}' on topic '{}'", username, topic);
         } else {
-          log.info("MQTT ACL PUBLISH denied for user '{}' on topic '{}' (only 'hubs/data' is allowed)",
-                  username, topic);
+          log.info(
+              "MQTT ACL PUBLISH denied for user '{}' on topic '{}' (only 'hubs/data' is allowed)",
+              username,
+              topic);
         }
         return allowed;
       }
