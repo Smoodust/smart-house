@@ -39,6 +39,13 @@ weather:
 jwt:
   secret: ${JWT_SECRET}
   expiration: 3600000
+
 mqtt-auth:
   bridge-login: iambridginit
   bridge-pass: Tw21#_$5g(9\
+
+kafka:
+  topics:
+    - name: hubs.command
+      partitions: 1
+      replicas: 1

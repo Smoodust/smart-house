@@ -31,7 +31,7 @@ public class KafkaCommandService {
         try {
             serializedMessage = mapper.writeValueAsString(result);
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize DeviceCommandMQTTDTO for device {}: {}",
+            log.error("Failed to serialize for device {}: {}",
                     message.getDeviceId(), e.getMessage(), e);
             return;
         }
