@@ -9,6 +9,17 @@ spring:
       properties:
         spring.json.trusted.packages: "ru.tbank.common.dto"
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+    prometheus:
+      enabled: true
+    metrics:
+      tags:
+        application: bridge
+
 mqtt:
   broker: tcp://mosquitto:1883
   clientId: backend-bridge
