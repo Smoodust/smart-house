@@ -20,5 +20,7 @@ public abstract class SettingDefinition {
     this.defaultValue = defaultValue;
   }
 
+  public abstract String getSettingTypeName();
+
   public abstract Object convertAndValidate(Object value) throws IllegalArgumentException;
 }

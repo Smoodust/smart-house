@@ -1,6 +1,7 @@
 package ru.tbank.practicum.repository.settings;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BooleanDefinition extends SettingDefinition {
@@ -8,6 +9,12 @@ public class BooleanDefinition extends SettingDefinition {
   public BooleanDefinition(
       @JsonProperty("name") String name, @JsonProperty("defaultValue") Boolean defaultValue) {
     super(name, defaultValue);
+  }
+
+  @JsonIgnore
+  @Override
+  public String getSettingTypeName() {
+    return "boolean";
   }
 
   @Override
