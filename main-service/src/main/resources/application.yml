@@ -2,16 +2,16 @@ spring:
   main:
     web-application-type: servlet
   datasource:
-    url: jdbc:postgresql://db:5432/mydatabase
-    username: myuser
-    password: mypassword
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:myapp}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driverClassName: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       group-id: main-service
       auto-offset-reset: earliest
@@ -41,8 +41,8 @@ jwt:
   expiration: 3600000
 
 mqtt-auth:
-  bridge-login: iambridginit
-  bridge-pass: Tw21#_$5g(9\
+  bridge-login: ${MOSQUITTO_ADMIN_USER}
+  bridge-pass: ${MOSQUITTO_ADMIN_PASSWORD}
 
 kafka:
   topics:
