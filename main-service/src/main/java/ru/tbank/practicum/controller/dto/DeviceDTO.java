@@ -11,12 +11,14 @@ import ru.tbank.practicum.repository.settings.Setting;
 @AllArgsConstructor
 public class DeviceDTO {
   private Long id;
+  private String externalId;
   private Long idModel;
   private String name;
   private Setting setting;
 
   public DeviceDTO(Device device) {
     this.id = device.getId();
+    this.externalId = device.getExternalId();
     this.idModel = device.getModel().getModelId();
     this.name = device.getName();
     this.setting = new Setting(device.getModel(), device.getLastHistoricalData().getSettings());

@@ -18,7 +18,7 @@ import ru.tbank.practicum.service.DeviceService;
 @RequiredArgsConstructor
 @RestController
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping("/device")
+@RequestMapping("/devices")
 public class DeviceController {
   private final DeviceService deviceService;
 

@@ -1,20 +1,17 @@
 package ru.tbank.practicum.service;
 
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.tbank.practicum.repository.WeatherRepository;
 import ru.tbank.practicum.repository.entity.WeatherLocation;
 import ru.tbank.practicum.service.dto.WeatherAPIResponse;
 
+@RequiredArgsConstructor
 @Service
 public class WeatherService {
   private final WeatherClient weatherClient;
   private final WeatherRepository weatherRepository;
-
-  public WeatherService(WeatherClient weatherClient, WeatherRepository weatherRepository) {
-    this.weatherClient = weatherClient;
-    this.weatherRepository = weatherRepository;
-  }
 
   public WeatherLocation updateWeather(WeatherLocation weatherLocation) {
     Optional<WeatherAPIResponse> weatherResponse =

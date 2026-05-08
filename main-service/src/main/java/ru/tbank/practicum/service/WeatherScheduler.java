@@ -1,5 +1,6 @@
 package ru.tbank.practicum.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,15 +9,11 @@ import org.springframework.stereotype.Service;
 import ru.tbank.practicum.repository.WeatherRepository;
 import ru.tbank.practicum.repository.entity.WeatherLocation;
 
+@RequiredArgsConstructor
 @Service
 public class WeatherScheduler {
   private final WeatherService weatherService;
   private final WeatherRepository weatherRepository;
-
-  public WeatherScheduler(WeatherService weatherService, WeatherRepository weatherRepository) {
-    this.weatherService = weatherService;
-    this.weatherRepository = weatherRepository;
-  }
 
   @Scheduled(cron = "0 0 * * * *")
   public void updateWeatherLocationInfo() {
