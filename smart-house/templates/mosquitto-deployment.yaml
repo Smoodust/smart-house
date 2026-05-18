@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "smart-house.fullname" . }}-mosquitto
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mosquitto
+spec:
+  replicas: {{ .Values.mosquitto.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "smart-house.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: mosquitto
+  template:
+    metadata:
+      labels:
+        {{- include "smart-house.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mosquitto
+    spec:
+      containers:
+        - name: mosquitto
+          image: {{ .Values.mosquitto.image.repository }}:{{ .Values.mosquitto.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.mosquitto.containerPort }}
+          volumeMounts:
+            - name: mosquitto-config
+              mountPath: /etc/mosquitto/mosquitto.conf
+              subPath: mosquitto.conf
+      volumes:
+        - name: mosquitto-config
+          configMap:
+            name: {{ include "smart-house.fullname" . }}-mosquitto-config

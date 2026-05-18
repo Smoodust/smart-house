@@ -1,0 +1,12 @@
+Smart House is installed.
+
+Useful commands:
+
+  kubectl get pods,svc,job -n {{ .Release.Namespace }}
+  kubectl get all -n {{ .Release.Namespace }}
+
+Port-forward examples:
+
+  kubectl port-forward svc/{{ include "smart-house.fullname" . }}-grafana 3000:3000 -n {{ .Release.Namespace }}
+  kubectl port-forward svc/{{ include "smart-house.fullname" . }}-prometheus 9090:9090 -n {{ .Release.Namespace }}
+  kubectl port-forward svc/{{ include "smart-house.fullname" . }}-kafka-ui 8080:8080 -n {{ .Release.Namespace }}

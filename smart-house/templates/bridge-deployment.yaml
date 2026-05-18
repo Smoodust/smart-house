@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "smart-house.fullname" . }}-bridge
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+    app.kubernetes.io/component: bridge
+spec:
+  replicas: {{ .Values.bridge.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "smart-house.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: bridge
+  template:
+    metadata:
+      labels:
+        {{- include "smart-house.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: bridge
+    spec:
+      initContainers:
+        - name: wait-for-backend
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z {{ include "smart-house.fullname" . }}-backend {{ .Values.backend.service.port }}; do echo waiting for backend; sleep 5; done
+      containers:
+        - name: bridge
+          image: {{ .Values.bridge.image.repository }}:{{ .Values.bridge.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.bridge.containerPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "smart-house.fullname" . }}-config
+            - secretRef:
+                name: {{ include "smart-house.fullname" . }}-secret
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.bridge.probes.path }}
+              port: {{ .Values.bridge.containerPort }}
+            initialDelaySeconds: {{ .Values.bridge.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.bridge.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.bridge.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.bridge.probes.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.bridge.probes.path }}
+              port: {{ .Values.bridge.containerPort }}
+            initialDelaySeconds: {{ .Values.bridge.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.bridge.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.bridge.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.bridge.probes.failureThreshold }}

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smart-house.fullname" . }}-liquibase-changelog
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+data:
+  db.changelog-master.yaml: |
+{{ .Files.Get "liquibase/changelog/db.changelog-master.yaml" | nindent 4 }}

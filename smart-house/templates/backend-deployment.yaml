@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "smart-house.fullname" . }}-backend
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "smart-house.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        {{- include "smart-house.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      initContainers:
+        - name: wait-for-postgresql
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z {{ include "smart-house.fullname" . }}-postgresql 5432; do echo waiting for postgres; sleep 5; done
+        - name: wait-for-kafka
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z {{ include "smart-house.fullname" . }}-kafka 9092; do echo waiting for kafka; sleep 5; done
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.backend.containerPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "smart-house.fullname" . }}-config
+            - secretRef:
+                name: {{ include "smart-house.fullname" . }}-secret
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.backend.probes.path }}
+              port: {{ .Values.backend.containerPort }}
+            initialDelaySeconds: {{ .Values.backend.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.backend.probes.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.probes.path }}
+              port: {{ .Values.backend.containerPort }}
+            initialDelaySeconds: {{ .Values.backend.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.backend.probes.failureThreshold }}

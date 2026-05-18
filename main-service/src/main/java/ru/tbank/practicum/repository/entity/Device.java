@@ -31,7 +31,7 @@ public class Device {
   private DeviceModel model;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "location_id", nullable = false)
+  @JoinColumn(name = "location_id")
   private Location location;
 
   @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)

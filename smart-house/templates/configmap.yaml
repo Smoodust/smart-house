@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smart-house.fullname" . }}-config
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+data:
+  SERVER_PORT: {{ .Values.backend.containerPort | quote }}
+  DB_HOST: {{ printf "%s-postgresql" (include "smart-house.fullname" .) | quote }}
+  DB_PORT: "5432"
+  DB_NAME: {{ .Values.postgresql.auth.database | quote }}
+  JWT_SECRET: {{ .Values.global.jwtSecret | quote }}
+  KAFKA_BOOTSTRAP_SERVERS: {{ printf "%s-kafka:9092" (include "smart-house.fullname" .) | quote }}
+  MQTT_HOST: {{ printf "%s-mosquitto" (include "smart-house.fullname" .) | quote }}
+  MQTT_PORT: {{ .Values.mosquitto.containerPort | quote }}
+  BACKEND_URL: {{ printf "http://%s-backend:%v" (include "smart-house.fullname" .) .Values.backend.service.port | quote }}
+  BRIDGE_URL: {{ printf "http://%s-bridge:%v" (include "smart-house.fullname" .) .Values.bridge.service.port | quote }}
+  PROMETHEUS_URL: {{ printf "http://%s-prometheus:%v" (include "smart-house.fullname" .) .Values.prometheus.service.port | quote }}
+  GRAFANA_URL: {{ printf "http://%s-grafana:%v" (include "smart-house.fullname" .) .Values.grafana.service.port | quote }}
+  KAFKA_UI_URL: {{ printf "http://%s-kafka-ui:%v" (include "smart-house.fullname" .) .Values.kafkaUi.service.port | quote }}
+  MOSQUITTO_PORT: {{ .Values.mosquitto.service.port | quote }}
+  PROMETHEUS_SCRAPE_INTERVAL: "15s"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smart-house.fullname" . }}-prometheus-config
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    scrape_configs:
+      - job_name: prometheus
+        static_configs:
+          - targets:
+              - localhost:9090
+      - job_name: backend
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - {{ include "smart-house.fullname" . }}-backend:{{ .Values.backend.service.port }}
+      - job_name: bridge
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - {{ include "smart-house.fullname" . }}-bridge:{{ .Values.bridge.service.port }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smart-house.fullname" . }}-grafana-datasource
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+data:
+  datasource.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://{{ include "smart-house.fullname" . }}-prometheus:{{ .Values.prometheus.service.port }}
+        isDefault: true
+        editable: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smart-house.fullname" . }}-mosquitto-config
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+data:
+  mosquitto.conf: |
+    listener 1883
+    allow_anonymous true
+    persistence true
+    persistence_location /mosquitto/data/
+    log_dest stdout
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smart-house.fullname" . }}-postgres-config
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+data:
+  POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"

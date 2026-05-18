@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "smart-house.fullname" . }}-kafka-ui
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+    app.kubernetes.io/component: kafka-ui
+spec:
+  replicas: {{ .Values.kafkaUi.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "smart-house.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: kafka-ui
+  template:
+    metadata:
+      labels:
+        {{- include "smart-house.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: kafka-ui
+    spec:
+      containers:
+        - name: kafka-ui
+          image: {{ .Values.kafkaUi.image.repository }}:{{ .Values.kafkaUi.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.kafkaUi.containerPort }}
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: local
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              value: {{ printf "%s-kafka:9092" (include "smart-house.fullname" .) | quote }}
+            - name: DYNAMIC_CONFIG_ENABLED
+              value: "true"

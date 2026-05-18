@@ -13,7 +13,7 @@ public class DeviceModelService {
   private final DeviceModelRepository deviceModelRepository;
 
   public DeviceModel getDeviceModelById(long id) {
-    Optional<DeviceModel> model = deviceModelRepository.findById(id);
+    Optional<DeviceModel> model = deviceModelRepository.findByModelId(id);
     if (model.isEmpty()) {
       throw new DeviceNotFoundException("Device not found with id " + id);
     }

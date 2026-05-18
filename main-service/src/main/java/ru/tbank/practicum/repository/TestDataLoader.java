@@ -76,14 +76,14 @@ public class TestDataLoader {
     user.setLogin(login);
     user.setPassHash(passwordEncoder.encode(password));
     user.setRoles(Set.of("USER"));
-    return userRepository.save(user);
+    return userRepository.saveAndFlush(user);
   }
 
   private Location createAndSaveLocation(String name, User user) {
     Location location = new Location();
     location.setName(name);
     location.setUser(user);
-    return locationRepository.save(location);
+    return locationRepository.saveAndFlush(location);
   }
 
   private DeviceModel createAndSaveDeviceModel(
@@ -91,7 +91,7 @@ public class TestDataLoader {
     DeviceModel model = new DeviceModel();
     model.setModelName(modelName);
     model.setSettings(definitions);
-    return deviceModelRepository.save(model);
+    return deviceModelRepository.saveAndFlush(model);
   }
 
   private Device createAndSaveDevice(
@@ -109,6 +109,6 @@ public class TestDataLoader {
     data.setRecordedAt(Instant.now());
     data.setSettings(updates);
     device.addNewData(data);
-    return deviceRepository.save(device);
+    return deviceRepository.saveAndFlush(device);
   }
 }

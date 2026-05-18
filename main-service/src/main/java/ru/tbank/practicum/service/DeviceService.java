@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.common.dto.DeviceCommandKafkaDTO;
 import ru.tbank.practicum.exception.DeviceNotFoundException;
 import ru.tbank.practicum.repository.DeviceRepository;
@@ -34,6 +35,10 @@ public class DeviceService {
     return deviceRepository.findAllByUserId(user.get().getId());
   }
 
+  public List<Device> getAllDevicesByLocation(Long locationId, UserDetails userDetails) {
+    return deviceRepository.findAllByLocationIdAndUserId(locationId, userDetails.getUsername());
+  }
+
   public Device getDeviceById(long id, UserDetails userDetails) {
     Optional<User> user = userService.getUserByUserDetail(userDetails);
     if (user.isEmpty()) {
@@ -48,6 +53,11 @@ public class DeviceService {
       throw new IllegalArgumentException("Forbidden to access others device!");
     }
     return device.get();
+  }
+
+  @Transactional
+  public void changeDeviceName(long id, String newName, UserDetails userDetails) {
+    deviceRepository.updateDeviceName(id, newName, userDetails.getUsername());
   }
 
   public void updateDeviceState(Device device, Map<String, Object> newValues) {

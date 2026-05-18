@@ -1,5 +1,6 @@
 package ru.tbank.practicum.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,9 @@ public class ModelDeviceController {
   private final DeviceModelService deviceModelService;
 
   @GetMapping("/{id}")
+  @Operation(
+      summary = "Get detailed information of device model",
+      security = @SecurityRequirement(name = ""))
   ArrayList<DeviceSettingDTO> getDevice(
       @PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
     DeviceModel model = deviceModelService.getDeviceModelById(id);

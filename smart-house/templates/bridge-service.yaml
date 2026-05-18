@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "smart-house.fullname" . }}-bridge
+  labels:
+    {{- include "smart-house.labels" . | nindent 4 }}
+    app.kubernetes.io/component: bridge
+spec:
+  type: {{ .Values.bridge.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "smart-house.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: bridge
+  ports:
+    - name: http
+      port: {{ .Values.bridge.service.port }}
+      targetPort: {{ .Values.bridge.containerPort }}

@@ -13,11 +13,13 @@ public class DeviceDTO {
   private Long id;
   private String externalId;
   private Long idModel;
+  private Long idLocation;
   private String name;
   private Setting setting;
 
   public DeviceDTO(Device device) {
     this.id = device.getId();
+    this.idLocation = device.getLocation().getLocationId();
     this.externalId = device.getExternalId();
     this.idModel = device.getModel().getModelId();
     this.name = device.getName();
